@@ -111,7 +111,7 @@ class TorSubtitle:
         # 开头的官方国语中字 跟:：
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
         # 开头是国家、XYZTV、卫视，带上分隔符一起删
-        processed_name = re.sub(r"^(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧|\w国)[\:：\s/\|]", "", processed_name)
+        processed_name = re.sub(r"\b(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧)[\]\:：\s/\|]", "", processed_name)
         processed_name = re.sub(r"^(?:\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+\b", "", processed_name)
 
         # 干扰字词，可能在开头，或前2格
@@ -124,7 +124,7 @@ class TorSubtitle:
         chinese_ignore = [
             "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
             r"\b纪录", "简繁", r"国创\b", "翡翠台", r"\w*卫视", r"中\w+频道",
-            r"类[别型][:：]", r"\b无损\b", r"原盘\b", r"\b台湾" 
+            r"类[别型][:：]", r"\b无损\b", r"原盘\b", r"\b台湾\b",
         ]
         # 纯英文的忽略模式
         english_ignore = [
