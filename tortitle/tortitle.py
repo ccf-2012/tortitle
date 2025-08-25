@@ -183,7 +183,9 @@ class TorTitle:
             if match:
                 self.type = 'tv'
                 break
-
+        if match := re.search(patterns['full_season'], self.raw_name):
+            self.full_season = True
+            
         for key, pattern in patterns.items():
             match = re.search(pattern, self.title, flags=re.IGNORECASE)
             if match:

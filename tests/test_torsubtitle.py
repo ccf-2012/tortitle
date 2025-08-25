@@ -64,6 +64,7 @@ test_cases_for_title_parsing = [
     ("[DIY]官译简繁+简英繁英双语字幕*DTS:X临境音效*", ""),
     ("Lord of Mysteries | 诡秘之主 小丑卷 第10集", "诡秘之主" ),
     ("[Checked by maomao] 在远方 第一季 全54集 | 类型:剧情/爱情 主演:刘烨/马伊琍/梅婷 [国语/中字] | *4K* ", "在远方"),
+    ("[Checked by Ticutme] 鹊刀门传奇 全40集【杜比音效】【主演: 赵本山 | 宋小宝 | 宋晓峰 | 文松 | 程野】QHstudIo小组作品", "鹊刀门传奇"),
 ]   
 
 

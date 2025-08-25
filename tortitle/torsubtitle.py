@@ -31,7 +31,7 @@ def split_by_language_boundary(text: str) -> list[str]:
     Returns:
         A list of strings, split according to the rules.
     """
-    # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点），或者匹配一个非空格的词
+    # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*(?![一-鿆])|[^\s丨|/]+"
     
     return re.findall(pattern, text)
@@ -130,7 +130,7 @@ class TorSubtitle:
         ]
         # 纯英文的忽略模式
         english_ignore = [
-            r"PTP Gold.*?corn", r"DIY"
+            r"PTP Gold.*?corn", r"\bDIY\b", "Checked by "
         ]
 
         # 合并所有模式并编译正则表达式
