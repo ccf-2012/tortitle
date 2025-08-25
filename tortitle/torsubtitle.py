@@ -95,7 +95,8 @@ class TorSubtitle:
         self.extitle = ""
         processed_name = name.strip()
         # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
-        processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
+        # processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
+        processed_name = re.sub(r"【|】", " ", processed_name).strip()
         # 包含这些的，直接跳过
         if m := re.search(r"0day破解|\bFLAC\b|无损\b", processed_name, flags=re.I):
             return
@@ -120,12 +121,29 @@ class TorSubtitle:
         processed_name = re.sub(r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语", "", processed_name)
         processed_name = processed_name.strip()
 
-        ignore_patterns = re.compile(r"中字|\b导演|\b\w语\b|\b\w国\b|点播\b|\w+字幕|\b纪录|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|类[别型][:：]|\b\w语\b|\b无损\b|原盘\b", re.IGNORECASE)
+        # 为提高可读性，定义忽略模式列表
+        # 中文相关的忽略模式
+        chinese_ignore = [
+            "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
+            r"\b纪录", "简繁", r"国创\b", "翡翠台", r"\w*卫视", r"中\w+频道",
+            r"类[别型][:：]", r"\b无损\b", r"原盘\b",
+        ]
+        # 纯英文的忽略模式
+        english_ignore = [
+            r"PTP Gold.*?corn", r"DIY"
+        ]
 
-        if re.search(r'[丨|/]', processed_name):
-            main_parts = re.split(r'[丨|/]', processed_name)
+        # 合并所有模式并编译正则表达式
+        ignore_list = chinese_ignore + english_ignore
+        ignore_patterns = re.compile("|".join(ignore_list), re.IGNORECASE)
+        eng_pattern = re.compile("|".join(english_ignore), re.IGNORECASE)
+
+        if re.search(r'[\[\]丨|/]', processed_name):
+            blocks = re.split(r'[\[\]丨|/]', processed_name)
         else:
-            main_parts = split_by_language_boundary(processed_name)
+            blocks = split_by_language_boundary(processed_name)
+        # clear empty parts
+        main_parts = [p for p in blocks if p.strip()]
         candidate_list = []
         # 3 段之内要见到 title，否则不要了
         for part in main_parts[:3]:
@@ -144,7 +162,8 @@ class TorSubtitle:
                     return
             else:
                 # 一段[丨|/]分隔的仅包括英文的，
-                candidate_list.append(part)
+                if not eng_pattern.search(part):
+                    candidate_list.append(part)
 
         # 保留英文标题
         if candidate_list:

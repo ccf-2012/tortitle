@@ -62,7 +62,8 @@ test_cases_for_title_parsing = [
     ("纪录片 我们的浩瀚宇宙 全6集 *4K+HDR10+Dolby Atmos* *内封中字*", "我们的浩瀚宇宙"),
     ("Evening of Roses / Night Rose | 导演：胡玥 / 吴思远 | 演员：林心如 / 钟汉良 / 马天宇 / 倪虹洁 / 贾乃亮 | [汉语普通话]", "Evening of Roses"),
     ("[DIY]官译简繁+简英繁英双语字幕*DTS:X临境音效*", ""),
-    ("Lord of Mysteries | 诡秘之主 小丑卷 第10集", "诡秘之主" )
+    ("Lord of Mysteries | 诡秘之主 小丑卷 第10集", "诡秘之主" ),
+    ("[Checked by maomao] 在远方 第一季 全54集 | 类型:剧情/爱情 主演:刘烨/马伊琍/梅婷 [国语/中字] | *4K* ", "在远方"),
 ]   
 
 
