@@ -8,7 +8,7 @@ version = "0.0.1"
 authors = [
   { name="ccf2012" },
 ]
-description = "A title parser for torrent filenames"
+description = "一个用于从种⼦标题中解析电影、剧集信息的 Python 库，支持主标题和副标题的提取。"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

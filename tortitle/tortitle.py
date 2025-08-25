@@ -2,53 +2,53 @@ import re
 import os
 
 
-def cut_ext(tor_name):
-    if not tor_name:
+def cut_ext(torrent_name):
+    if not torrent_name:
         return ''
-    tortup = os.path.splitext(tor_name)
+    tortup = os.path.splitext(torrent_name)
     torext = tortup[1].lower()
     # if re.match(r'\.[0-9a-z]{2,5}$', tortup[1], flags=re.I):
     mvext = ['.mkv', '.ts', '.m2ts', '.vob', '.mpg', '.mp4', '.3gp', '.mov', '.tp', '.zip', '.pdf', '.iso', '.ass', '.srt', '.7z', '.rar']
     if torext.lower() in mvext:
         return tortup[0].strip()
     else:
-        return tor_name
+        return torrent_name
 
-def delimer_to_space(sstr):
-    dilimers = ['[', ']', '.', '{', '}', '_', ',', '(', ')' ]
+def delimer_to_space(input_string):
+    dilimers = ['[', ']', '.', '{', '}', '_', ',', '(', ')']
     for dchar in dilimers:
-        sstr = sstr.replace(dchar, ' ')
-    return sstr
+        input_string = input_string.replace(dchar, ' ')
+    return input_string
 
-def hyphen_to_space(sstr):
-    return sstr.replace('-', ' ')
+def hyphen_to_space(input_string):
+    return input_string.replace('-', ' ')
 
-def cutspan(sstr, ifrom, ito):
-    if (ifrom >= 0) and (len(sstr) > ito):
-        sstr = sstr[0:ifrom:] + sstr[ito::]
-    return sstr
+def cutspan(input_string, from_index, to_index):
+    if (from_index >= 0) and (len(input_string) > to_index):
+        input_string = input_string[0:from_index:] + input_string[to_index::]
+    return input_string
 
-def contains_cjk(str):
-    return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc]', str)
+def contains_cjk(input_string):
+    return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc]', input_string)
 
-def cut_aka(titlestr):
-    m = re.search(r'\s(/|AKA)\s', titlestr, re.I)
+def cut_aka(title_string):
+    m = re.search(r'\s(/|AKA)\s', title_string, re.I)
     if m:
-        titlestr = titlestr.split(m.group(0))[0]
-    return titlestr.strip()
+        title_string = title_string.split(m.group(0))[0]
+    return title_string.strip()
 
-def tryint(str):
+def tryint(input_string):
     cndigit = '一二三四五六七八九十'
-    if str[0] in cndigit and len(str) == 1:
-        return cndigit.index(str[0]) + 1
+    if input_string and input_string[0] in cndigit and len(input_string) == 1:
+        return cndigit.index(input_string[0]) + 1
     try:
-        return int(str)
+        return int(input_string)
     except:
         return 0
 
-def is_0day_name(itemstr):
+def is_0day_name(item_string):
     # CoComelon.S03.1080p.NF.WEB-DL.DDP2.0.H.264-NPMS
-    m = re.match(r'^\w+.*\b(BluRay|Blu-?ray|720p|1080[pi]|[xh].?26\d|2160p|576i|WEB-DL|DVD|WEBRip|HDTV)\b.*', itemstr, flags=re.A | re.I)
+    m = re.match(r'^\w+.*\b(BluRay|Blu-?ray|720p|1080[pi]|[xh].?26\d|2160p|576i|WEB-DL|DVD|WEBRip|HDTV)\b.*', item_string, flags=re.A | re.I)
     return m
 
 class TorTitle:
@@ -84,29 +84,29 @@ class TorTitle:
         self.full_season = (self.type == 'tv') and (self.episode == '')
 
 
-    def _parse_more(self, torName):
-        mediaSource, video, audio = '', '', ''
-        if m := re.search(r"(?<=(1080p|2160p)\s)(((\w+)\s+)?WEB(-DL)?)|\bWEB(-DL)?\b|\bHDTV\b|((UHD )?(BluRay|Blu-ray))", torName, re.I):
+    def _parse_more(self, torrent_name):
+        media_source, video, audio = '', '', ''
+        if m := re.search(r"(?<=(1080p|2160p)\s)(((\w+)\s+)?WEB(-DL)?)|\bWEB(-DL)?\b|\bHDTV\b|((UHD )?(BluRay|Blu-ray))", torrent_name, re.I):
             m0 = m[0].strip()
             if re.search(r'WEB[-]?(DL)?', m0, re.I):
-                mediaSource = 'webdl'
+                media_source = 'webdl'
             elif re.search(r'BLURAY|BLU-RAY', m0, re.I):
-                if re.search(r'x26[45]', torName, re.I):
-                    mediaSource = 'encode'
-                elif re.search(r'remux', torName, re.I):
-                    mediaSource = 'remux'
+                if re.search(r'x26[45]', torrent_name, re.I):
+                    media_source = 'encode'
+                elif re.search(r'remux', torrent_name, re.I):
+                    media_source = 'remux'
                 else:
-                    mediaSource = 'bluray'
+                    media_source = 'bluray'
             else:
-                mediaSource = m0
-        if m := re.search(r"AVC|HEVC(\s(DV|HDR))?|H\.?26[456](\s(HDR|DV))?|x26[45]\s?(10bit)?(HDR)?|DoVi (HDR(10)?)? (HEVC)?", torName, re.I):
+                media_source = m0
+        if m := re.search(r"AVC|HEVC(\s(DV|HDR))?|H\.?26[456](\s(HDR|DV))?|x26[45]\s?(10bit)?(HDR)?|DoVi (HDR(10)?)? (HEVC)?", torrent_name, re.I):
             video = m[0].strip()
-        if m := re.search(r"DTS-HD MA \d.\d|LPCM\s?\d.\d|TrueHD\s?\d\.\d( Atmos)?|DDP[\s\.]*\d\.\d( Atmos)?|(AAC|FLAC)(\s*\d\.\d)?( Atmos)?|DTS(\s?\d\.\d)?|DD\+? \d\.\d", torName, re.I):
+        if m := re.search(r"DTS-HD MA \d.\d|LPCM\s?\d.\d|TrueHD\s?\d\.\d( Atmos)?|DDP[\s\.]*\d\.\d( Atmos)?|(AAC|FLAC)(\s*\d\.\d)?( Atmos)?|DTS(\s?\d\.\d)?|DD\+? \d\.\d", torrent_name, re.I):
             audio = m[0].strip()
-        return mediaSource, video, audio
+        return media_source, video, audio
 
-    def _parse_resolution(self, torName):
-        match = re.search(r'\b(4K|2160p|1080[pi]|720p|576p|480p)\b', torName, re.A | re.I)
+    def _parse_resolution(self, torrent_name):
+        match = re.search(r'\b(4K|2160p|1080[pi]|720p|576p|480p)\b', torrent_name, re.A | re.I)
         if match:
             r = match.group(0).strip().lower()
             if r == '4k':
@@ -115,17 +115,17 @@ class TorTitle:
         else:
             return ''
         
-    def _parse_group(self, torName):
-        sstr = cut_ext(torName)
+    def _parse_group(self, torrent_name):
+        sstr = cut_ext(torrent_name)
         match = re.search(r'[@\-￡]\s?(\w+)(?!.*[@\-￡].*)$', sstr, re.I)
         if match:
-            groupName = match.group(1).strip()
+            group_name = match.group(1).strip()
             # # TODO: BD-50_A_PORTRAIT_OF_SHUNKIN_1976_BC
             if match.span(1)[0] < 4:
                 return None
-            if groupName.startswith('CMCT') and not groupName.startswith('CMCTV'):
-                groupName = 'CMCT'
-            return groupName
+            if group_name.startswith('CMCT') and not group_name.startswith('CMCTV'):
+                group_name = 'CMCT'
+            return group_name
 
         return None
         
