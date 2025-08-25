@@ -37,7 +37,7 @@ print(TorTitle(torrent_name).to_dict())
 
 ### 解析副标题
 
-`TorSubtitle` 类用于从 PT 站的种⼦标题中提取副标题信息。
+`TorSubtitle` 类用于从 PT 站的种⼦副标题中提取`可能是标题`的信息(这里叫extitle)，以及season, episode等。
 
 ```python
 from tortitle import TorSubtitle

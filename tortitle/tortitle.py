@@ -61,6 +61,12 @@ class TorTitle:
         self.season = ''
         self.episode = ''
         self.sub_episode = ''
+        self.media_source = ''
+        self.group = ''
+        self.resolution = ''
+        self.video = '' 
+        self.audio = ''
+        self.full_season = False
         # self.season_int = None
         # self.episode_int = None
         self._se_pos = 0
@@ -120,11 +126,6 @@ class TorTitle:
         match = re.search(r'[@\-￡]\s?(\w+)(?!.*[@\-￡].*)$', sstr, re.I)
         if match:
             group_name = match.group(1).strip()
-            # # TODO: BD-50_A_PORTRAIT_OF_SHUNKIN_1976_BC
-            if match.span(1)[0] < 4:
-                return None
-            if group_name.startswith('CMCT') and not group_name.startswith('CMCTV'):
-                group_name = 'CMCT'
             return group_name
 
         return None
@@ -141,8 +142,6 @@ class TorTitle:
             keyword_pattern = r'1080p|2160p|720p|H\.?26[45]|x26[45]'
             
             main_part = ''
-            cjk_parts = []
-
             keyword_idx = -1
             for idx, part in enumerate(parts):
                 if re.search(keyword_pattern, part, re.I):
@@ -167,8 +166,6 @@ class TorTitle:
         if potential_years:
             self.year = potential_years[-1]
             self._year_pos = self.title.rfind(self.year)
-            # if self.title.strip() != self.year:
-            #     self.title = self.title.replace(self.year, ' ')
 
     def _extract_type(self):
         patterns = {
@@ -261,7 +258,7 @@ class TorTitle:
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED', 
-            "Director's Cut"
+            r"Direct.{1,5}Cut"
         ]
         pattern = r'\b(' + '|'.join(tag for tag in tags) + r')\b'
         self.title = re.sub(pattern, '', self.title, flags=re.IGNORECASE)
@@ -272,9 +269,6 @@ class TorTitle:
 
         if not self._check_title() and self.cntitle:
             self.title = self.cntitle
-
-        # self.title = re.sub(r'\s+', ' ', self.title).strip()
-        # self.title = self.title.split('-')[0].strip()
 
     def _handle_special_cases(self):
         pass
