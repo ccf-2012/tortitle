@@ -75,18 +75,22 @@ class TorSubtitle:
         processed_name = name.strip()
         # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
         processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
+        # 包含这些的，直接跳过
+        if m := re.match(r"(0day破解|\bFLAC\b|无损\b)", processed_name, flags=re.I):
+            return
         # 这些开头的，直接不处理
-        if m := re.match(r"^(0day破解|(全|第).{1,4}[季|集]|[简中].*?字幕|主演|无损)\b", processed_name, flags=re.I):
+        if m := re.match(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|主演\b|无损\b)", processed_name, flags=re.I):
             self.extitle = ''
             return
 
         # 开头的一些可能字词，先删掉：...新番，官方国语中字，国漫，国家，xxx剧，xxx台/卫视，综艺，带上分隔符一起删
         processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
+        processed_name = re.sub(r"^\:", "",  processed_name)
         # 开头的官方国语中字 跟:：
-        processed_name = re.sub(r"^\w*(官方|禁转|国语|中字|国漫|特效)[\:：\s/\|]", "", processed_name).strip()
+        processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+[\:：\s/\|]*", "", processed_name, flags=re.I).strip()
         # 开头是国家、XYZTV、卫视，带上分隔符一起删
         processed_name = re.sub(r"^(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧|\w国)[\:：\s/\|]", "", processed_name)
-        processed_name = re.sub(r"^(\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)\b", "", processed_name)
+        processed_name = re.sub(r"^(?:\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+\b", "", processed_name)
         # 墨西哥剧：，英剧，美国...后跟 ：:|，带上分隔符一起删
         processed_name = re.sub(r"\b(连载\w*|\w*国漫)[\:：\s\|]", "", processed_name)
 
@@ -96,16 +100,13 @@ class TorSubtitle:
 
         processed_name = processed_name.strip()
 
-        # \|\s分隔的各个part，含有以下字词则抛弃
         main_parts = re.split(r'[丨|/ \s]', processed_name)
-        ignore_patterns = re.compile(r"\b官方|国语|国配|中字|特效|DIY|国漫|\b\w国\b|点播\b|\w+字幕|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|\w+TV\b|类别[:：]|\b无损\b|原盘\b", re.IGNORECASE)
+        ignore_patterns = re.compile(r"中字|\b\w语\b|\b\w国\b|点播\b|\w+字幕|\b纪录|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|类[别型][:：]|\b\w语\b|\b无损\b|原盘\b", re.IGNORECASE)
 
         for part in main_parts:
             candidate = re.sub(r'\(|\)|（|）', ' ', part).strip()
             # 有中字的部分，且，包含上述字词
-            if not contains_cjk(part):
-                continue
-            if ignore_patterns.match(candidate):
+            if not contains_cjk(part) or ignore_patterns.match(candidate):
                 continue
 
             # If it starts with Chinese, we can split by space to separate title and version/other info

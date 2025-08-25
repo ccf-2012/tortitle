@@ -425,10 +425,16 @@ TEST_CASES = [
             "cntitle": "代号47",
             "year": "2015",
             "type": "movie",
-            "season": "",
-            "episode": "",
         },
     ),
+    (
+        "[日剧][高岭之花][Takanenohana][全10集][720p][国语][中文字幕]",
+        {
+            "title": "Takanenohana",
+            "cntitle": "高岭之花",
+            "type": "tv",
+        }
+    )
 ]
 
 

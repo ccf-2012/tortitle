@@ -87,7 +87,7 @@ class TorTitle:
         self.media_source, self.video, self.audio = self._parse_more(self.raw_name)
         self.group = self._parse_group(parsing_target)
         self.resolution = self._parse_resolution(self.raw_name)
-        self.full_season = (self.type == 'tv') and (self.episode == '')
+        # self.full_season = (self.type == 'tv') and (self.episode == '')
 
 
     def _parse_more(self, torrent_name):
@@ -139,7 +139,7 @@ class TorTitle:
     def _handle_bracket_title(self):
         if self.title.startswith('[') and self.title.endswith(']'):
             parts = [part.strip() for part in self.title[1:-1].split('][') if part.strip()]
-            keyword_pattern = r'1080p|2160p|720p|H\.?26[45]|x26[45]'
+            keyword_pattern = r'1080p|2160p|720p|H\.?26[45]|x26[45]|全.{1,4}集'
             
             main_part = ''
             keyword_idx = -1
@@ -147,19 +147,19 @@ class TorTitle:
                 if re.search(keyword_pattern, part, re.I):
                     keyword_idx = idx
                     main_part = part
+                    break
             
             if main_part:
                 if re.match(r'^'+keyword_pattern+'$', main_part, flags=re.I):
                     if keyword_idx > 0:
-                        self.title = parts[keyword_idx-1]
                         keyword_idx = keyword_idx - 1
+                        self.title = parts[keyword_idx]
                 else:
                     self.title = main_part
                 if keyword_idx > 0 and contains_cjk(parts[keyword_idx-1]):
                     full_cntitle = parts[keyword_idx-1]
                     full_cntitle = re.sub(r'大陆|港台', '', full_cntitle, flags=re.I)
                     self.cntitle = full_cntitle.split(' ')[0].strip()
-
 
     def _extract_year(self):
         potential_years = re.findall(r'(19\d{2}|20\d{2})(?:\d{4})?\b', self.title)
@@ -174,13 +174,19 @@ class TorTitle:
             'season_word': r'\bSeason (\d+)\b',
             'ep_only': r'\bEp?(\d+)(-Ep?\d+)?\b',
             'cn_season': r'第([一二三四五六七八九十]|\d+)季',
-            'cn_episode': r'第([一二三四五六七八九十]+|\d+)集'
+            'cn_episode': r'第([一二三四五六七八九十]+|\d+)集',
+            'full_season': r'[全第]\w{,4}\s*[集季]'
         }
+        # TODO: find better way
+        for key, pattern in patterns.items():
+            match = re.search(pattern, self.raw_name, flags=re.IGNORECASE)
+            if match:
+                self.type = 'tv'
+                break
 
         for key, pattern in patterns.items():
             match = re.search(pattern, self.title, flags=re.IGNORECASE)
             if match:
-                self.type = 'tv'
                 if key in ['s_e']:
                     # self.season_int = int(match.group(1))
                     # self.episode_int = int(match.group(2))
@@ -196,6 +202,8 @@ class TorTitle:
                 elif key in ['cn_episode', 'ep_only']:
                     self.season = 'S01'
                     self.episode = match.group()
+                elif key == 'full_season':
+                    self.full_season = True
 
                 self._se_pos = match.span(0)[0]
                 return
