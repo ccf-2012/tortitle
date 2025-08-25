@@ -76,7 +76,7 @@ class TorSubtitle:
         # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
         processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
         # 这些开头的，直接不处理
-        if m := re.match(r"^(0day破解|第.{1,4}[季|集]|[简中].*?字幕|主演|无损)\b", processed_name, flags=re.I):
+        if m := re.match(r"^(0day破解|(全|第).{1,4}[季|集]|[简中].*?字幕|主演|无损)\b", processed_name, flags=re.I):
             self.extitle = ''
             return
 
@@ -86,7 +86,7 @@ class TorSubtitle:
         processed_name = re.sub(r"^\w*(官方|禁转|国语|中字|国漫|特效)[\:：\s/\|]", "", processed_name).strip()
         # 开头是国家、XYZTV、卫视，带上分隔符一起删
         processed_name = re.sub(r"^(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧|\w国)[\:：\s/\|]", "", processed_name)
-        processed_name = re.sub(r"^(\w+TV|Jade|TVB\w*|HOYTV|点播|翡翠台|\w*卫视|电影|韩综)\b", "", processed_name)
+        processed_name = re.sub(r"^(\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)\b", "", processed_name)
         # 墨西哥剧：，英剧，美国...后跟 ：:|，带上分隔符一起删
         processed_name = re.sub(r"\b(连载\w*|\w*国漫)[\:：\s\|]", "", processed_name)
 

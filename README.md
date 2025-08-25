@@ -16,7 +16,7 @@ pip install tortitle
 
 ```python
 from tortitle import TorTitle
-torrent_name = "The.Mandalorian.S01E01.1080p.WEB-DL.DDP5.1.H.264-NTb"
+torrent_name = "The.Mandalorian.S01E01.1080p.WEB-DL.DDP5.1.H.264-NT"
 title = TorTitle(torrent_name)
 
 print(f"标题: {title.title}")
@@ -27,6 +27,12 @@ print(f"集: {title.episode}")
 print(f"分辨率: {title.resolution}")
 print(f"片源: {title.media_source}")
 print(f"制作组: {title.group}")
+
+# another example
+torrent_name = "[美国][金钱世界][All.the.Money.in.the.World.2017.1080p.BluRay.x264.DTS.5.1-CMCC][中英字幕]"
+print(TorTitle(torrent_name).to_dict())
+# 输出：
+# {'title': 'All the Money in the World', 'cntitle': '金钱世界', 'year': '2017', 'type': 'movie', 'season': '', 'episode': ''}
 ```
 
 ### 解析副标题
@@ -35,7 +41,7 @@ print(f"制作组: {title.group}")
 
 ```python
 from tortitle import TorSubtitle
-torrent_name = "[SubSub] The Queen's Gambit S01E01 Queen's Gambit.ass"
+torrent_name = "舌尖上的中国 第一季 | 全7集 | 导演: 陈晓卿 | 主演: 李立宏 国语/中字 4K高码版"
 subtitle = TorSubtitle(torrent_name)
 
 print(f"副标题: {subtitle.extitle}")

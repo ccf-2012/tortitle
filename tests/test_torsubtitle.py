@@ -1,6 +1,7 @@
 import pytest
 from tortitle.torsubtitle import TorSubtitle, parse_subtitle
 
+
 test_cases_for_title_parsing = [
     ("伊甸深宅 | 类别：恐怖", "伊甸深宅"),
     ("夜樱家的大作战 | 全27集 | 4K 高码 | 类型: 剧情/动作/动画 | 导演: 凑未来 | 主演: 川岛零士/本渡枫/小西克幸/鬼头明里/兴津和幸", "夜樱家的大作战"),
@@ -50,6 +51,8 @@ test_cases_for_title_parsing = [
     ("遗传学歌剧 / Repo, The Genetic Opera! / 莎拉布莱曼之生化歌剧 / 基因歌剧之透支", "遗传学歌剧"),
     ("[美国/法国][机械师2：复活][Mechanic.Resurrection.2016.720p.BluRay.x264.DD5.1-HDChina]", "机械师2：复活"),
     ("主演: 石原里美 / 峯田和伸 / 芳根京子 / 千叶雄大 FIX字幕侠内嵌中文版", ""),
+    ("(新)黑寡妇/斯嘉丽·约翰逊 弗洛伦丝·皮尤 蕾切尔·薇兹 *国英双语 *官译简繁英字幕", "黑寡妇"),
+    ("全1集 粤语 | 繁体DvbSub字幕", "")
 ]
 
 
@@ -66,7 +69,8 @@ test_cases_for_season_and_episode_parsing = {
     "暗蚀 Andhera 全8集": {"season": "", "episode": "", "total_episodes": 8, "extitle": "暗蚀"},
     "夏目友人帐 第七季": {"season": 7, "episode": "", "extitle": "夏目友人帐"},
     "异形：地球 / Alien: Earth 第1季 第03集": {"season": 1, "episode": "E03", "extitle": "异形：地球"},
-    "酱园弄·悬案/酱园弄第一部/酱园弄(上)/酱园弄杀夫案/She Has No Name | 1080p | 国语/中字 | 类型:剧情/犯罪 | 导演:陈可辛/韩帅 | 主演:章子怡/王传君/易烊千玺": {"season": "", "episode": "", "extitle": "酱园弄·悬案"}
+    "酱园弄·悬案/酱园弄第一部/酱园弄(上)/酱园弄杀夫案/She Has No Name | 1080p | 国语/中字 | 类型:剧情/犯罪 | 导演:陈可辛/韩帅 | 主演:章子怡/王传君/易烊千玺": 
+    {"season": "", "episode": "", "extitle": "酱园弄·悬案"}
 }
 
 
