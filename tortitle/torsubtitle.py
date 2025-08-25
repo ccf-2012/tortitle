@@ -108,13 +108,13 @@ class TorSubtitle:
         # 开头的一些可能字词，先删掉：...新番，官方国语中字，国漫，国家，xxx剧，xxx台/卫视，综艺，带上分隔符一起删
         processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
         processed_name = re.sub(r"^[\:：]", "",  processed_name)
-        # 开头的官方国语中字 跟:：
+        # 开头的官方国语中字
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
-        # 开头是国家、XYZTV、卫视，带上分隔符一起删
-        processed_name = re.sub(r"\b(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧)[\]\:：\s/\|]", "", processed_name)
+        # 开头是国家、XYZTV、卫视
         processed_name = re.sub(r"^(?:\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+\b", "", processed_name)
 
         # 干扰字词，可能在开头，或前2格
+        processed_name = re.sub(r"\b(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧)[\]\:：\s/\|]", "", processed_name)
         processed_name = re.sub(r"\b(连载\w*|\w*国漫|短剧)\b", "", processed_name)
         processed_name = re.sub(r"\b([全第]\w{,4}\s*集|第\d+集|S\d+|(\d+-\d+集)|第.{1,4}[季|集]|纪录|专辑|综艺|动画|剧场版)\b", "", processed_name)
         processed_name = re.sub(r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语", "", processed_name)
@@ -128,7 +128,7 @@ class TorSubtitle:
         ]
         # 纯英文的忽略模式
         english_ignore = [
-            r"PTP Gold.*?corn", r"\bDIY\b", "Checked by "
+            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by "
         ]
 
         # 合并所有模式并编译正则表达式
