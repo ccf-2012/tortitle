@@ -280,7 +280,12 @@ class TorTitle:
             'year': self.year,
             'type': self.type,
             'season': self.season,
-            'episode': self.episode
+            'episode': self.episode,
+            'media_source': self.media_source,
+            'group': self.group,
+            'resolution': self.resolution,
+            'video': self.video,
+            'audio': self.audio
         }
 
 def parse_tor_name(name):

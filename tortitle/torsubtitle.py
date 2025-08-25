@@ -133,7 +133,6 @@ class TorSubtitle:
     def to_dict(self):
         """Returns the parsed data as a dictionary."""
         return {
-            "raw_name": self.raw_name,
             "extitle": self.extitle,
             "season": self.season,
             "episode": self.episode,

@@ -12,7 +12,7 @@ pip install tortitle
 
 ### 解析主标题
 
-`TorTitle` 类用于解析种⼦标题，并提取主要信息，例如标题、年份、季数、集数、分辨率等。
+`TorTitle` 用于解析种⼦标题，并提取主要信息，例如标题、年份、季数、集数、分辨率等。
 
 ```python
 from tortitle import TorTitle
@@ -37,7 +37,7 @@ print(TorTitle(torrent_name).to_dict())
 
 ### 解析副标题
 
-`TorSubtitle` 类用于从 PT 站的种⼦副标题中提取`可能是标题`的信息(这里叫extitle)，以及season, episode等。
+`TorSubtitle` 用于从 PT 站的种⼦副标题中提取`可能是标题`的信息(这里叫extitle)，以及season, episode等。
 
 ```python
 from tortitle import TorSubtitle
