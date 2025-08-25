@@ -187,6 +187,7 @@ class TorTitle:
         for key, pattern in patterns.items():
             match = re.search(pattern, self.title, flags=re.IGNORECASE)
             if match:
+                self.type = 'tv'
                 if key in ['s_e']:
                     # self.season_int = int(match.group(1))
                     # self.episode_int = int(match.group(2))

@@ -85,7 +85,7 @@ class TorSubtitle:
 
         # 开头的一些可能字词，先删掉：...新番，官方国语中字，国漫，国家，xxx剧，xxx台/卫视，综艺，带上分隔符一起删
         processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
-        processed_name = re.sub(r"^\:", "",  processed_name)
+        processed_name = re.sub(r"^[\:：]", "",  processed_name)
         # 开头的官方国语中字 跟:：
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+[\:：\s/\|]*", "", processed_name, flags=re.I).strip()
         # 开头是国家、XYZTV、卫视，带上分隔符一起删
@@ -100,10 +100,16 @@ class TorSubtitle:
 
         processed_name = processed_name.strip()
 
-        main_parts = re.split(r'[丨|/ \s]', processed_name)
-        ignore_patterns = re.compile(r"中字|\b\w语\b|\b\w国\b|点播\b|\w+字幕|\b纪录|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|类[别型][:：]|\b\w语\b|\b无损\b|原盘\b", re.IGNORECASE)
+        # 所有分隔化为空格，再将空格合并
+        processed_name = re.sub(r"[丨|/]", " ", processed_name)
+        processed_name = re.sub(r"\s+", " ", processed_name)
+        # 以空格进行分parts
+        main_parts = re.split(r' ', processed_name)
+        # main_parts = re.split(r'[丨|/ \s]', processed_name)
+        ignore_patterns = re.compile(r"中字|\b导演|\b\w语\b|\b\w国\b|点播\b|\w+字幕|\b纪录|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|类[别型][:：]|\b\w语\b|\b无损\b|原盘\b", re.IGNORECASE)
 
-        for part in main_parts:
+        # 3 段之内要见到 title，否则不要了
+        for part in main_parts[:3]:
             candidate = re.sub(r'\(|\)|（|）', ' ', part).strip()
             # 有中字的部分，且，包含上述字词
             if not contains_cjk(part) or ignore_patterns.match(candidate):
