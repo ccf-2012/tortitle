@@ -1,6 +1,6 @@
 # TorTitle
 
-A good title parser for torrent filenames.
+A title parser for torrent filenames.
 
 This library helps parse torrent filenames to extract structured information like title, year, season, episode, etc.
 
