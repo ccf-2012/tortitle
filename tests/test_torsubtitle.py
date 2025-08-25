@@ -55,13 +55,15 @@ test_cases_for_title_parsing = [
     ("全1集 粤语 | 繁体DvbSub字幕", ""),
     ("官方 首发 疾速追杀：芭蕾杀姬/捍卫任务：复仇芭蕾(台)/杀神John Wick外传：芭蕾杀姬(港) h5", "疾速追杀：芭蕾杀姬"),
     ("[国创] 兵主奇魂 全24集 ｜ 类型: 剧情 / 动画 / 奇幻 / 冒险 *含B站水印*", "兵主奇魂"),
-    ("官方 Kill Tony: Mayhem at Madison Square Garden | 类型:真人秀 | 英语", ""),
+    ("官方 Kill Tony: Mayhem at Madison Square Garden | 类型:真人秀 | 英语", "Kill Tony: Mayhem at Madison Square Garden"),
     ("官方独占 港劇:愛.回家之開心速遞(第2626集)[粤语][簡繁DVB字幕][劉丹/單立文/湯盈盈/呂慧儀 主演][CHDHKTV", "港劇:愛.回家之開心速遞"),
     ("官方独占中字特效 超人 [KKYY] [内封简英+繁英SDR特效字幕] h3", "超人"),
     ("国语/中字", ""),
     ("纪录片 我们的浩瀚宇宙 全6集 *4K+HDR10+Dolby Atmos* *内封中字*", "我们的浩瀚宇宙"),
-    ("Evening of Roses / Night Rose | 导演：胡玥 / 吴思远 | 演员：林心如 / 钟汉良 / 马天宇 / 倪虹洁 / 贾乃亮 | [汉语普通话]", ""),
-]
+    ("Evening of Roses / Night Rose | 导演：胡玥 / 吴思远 | 演员：林心如 / 钟汉良 / 马天宇 / 倪虹洁 / 贾乃亮 | [汉语普通话]", "Evening of Roses"),
+    ("[DIY]官译简繁+简英繁英双语字幕*DTS:X临境音效*", ""),
+    ("Lord of Mysteries | 诡秘之主 小丑卷 第10集", "诡秘之主" )
+]   
 
 
 @pytest.mark.parametrize("case, expected", test_cases_for_title_parsing)

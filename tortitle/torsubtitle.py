@@ -16,6 +16,27 @@ def chinese_to_arabic(s: str) -> int | None:
 def contains_cjk(str):
     return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc]', str)
 
+def split_by_language_boundary(text: str) -> list[str]:
+    """
+    Splits a string by spaces, but keeps English phrases together.
+
+    The function uses a regular expression to find two types of patterns:
+    1. A sequence of English words/numbers that can be separated by spaces,
+       colons, dots, or hyphens.
+    2. Any other sequence of non-space characters.
+
+    Args:
+        text: The input string to split.
+
+    Returns:
+        A list of strings, split according to the rules.
+    """
+    # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点），或者匹配一个非空格的词
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*(?![一-鿆])|[^\s丨|/]+"
+    
+    return re.findall(pattern, text)
+
+
 class TorSubtitle:
     """
     Parses a raw subtitle string to extract title, season, and episode information.
@@ -76,10 +97,10 @@ class TorSubtitle:
         # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
         processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
         # 包含这些的，直接跳过
-        if m := re.match(r"(0day破解|\bFLAC\b|无损\b)", processed_name, flags=re.I):
+        if m := re.search(r"0day破解|\bFLAC\b|无损\b", processed_name, flags=re.I):
             return
         # 这些开头的，直接不处理
-        if m := re.match(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|主演\b|无损\b)", processed_name, flags=re.I):
+        if m := re.search(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|导演|主演\b|无损\b)", processed_name, flags=re.I):
             self.extitle = ''
             return
 
@@ -97,36 +118,38 @@ class TorSubtitle:
         # 干扰字词，可能在开头，或前2格
         processed_name = re.sub(r"\b([全第]\w{,4}\s*集|第\d+集|S\d+|(\d+-\d+集)|第.{1,4}[季|集]|纪录|专辑|综艺|动画|剧场版)\b", "", processed_name)
         processed_name = re.sub(r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语", "", processed_name)
-
         processed_name = processed_name.strip()
 
-        # 所有分隔化为空格，再将空格合并
-        processed_name = re.sub(r"[丨|/]", " ", processed_name)
-        processed_name = re.sub(r"\s+", " ", processed_name)
-        # 以空格进行分parts
-        main_parts = re.split(r' ', processed_name)
-        # main_parts = re.split(r'[丨|/ \s]', processed_name)
         ignore_patterns = re.compile(r"中字|\b导演|\b\w语\b|\b\w国\b|点播\b|\w+字幕|\b纪录|简繁|翡翠台|\w*卫视|中\w+频道|PTP Gold.*?corn|类[别型][:：]|\b\w语\b|\b无损\b|原盘\b", re.IGNORECASE)
 
+        if re.search(r'[丨|/]', processed_name):
+            main_parts = re.split(r'[丨|/]', processed_name)
+        else:
+            main_parts = split_by_language_boundary(processed_name)
+        candidate_list = []
         # 3 段之内要见到 title，否则不要了
         for part in main_parts[:3]:
-            candidate = re.sub(r'\(|\)|（|）', ' ', part).strip()
-            # 有中字的部分，且，包含上述字词
-            if not contains_cjk(part) or ignore_patterns.match(candidate):
-                continue
+            if contains_cjk(part):
+                # 所有分隔化为空格，再将空格合并
+                part = re.sub(r"[丨|/\(\)）（]", " ", part)
+                part = re.sub(r"\s+", " ", part).strip()
+                sub_parts = part.split(' ')
+                for spart in sub_parts[:3]:
+                    if m := ignore_patterns.search(spart):
+                        continue
+                    candidate_list.append(spart)
+                    if not contains_cjk(spart):
+                        continue
+                    self.extitle = spart
+                    return
+            else:
+                # 一段[丨|/]分隔的仅包括英文的，
+                candidate_list.append(part)
 
-            # If it starts with Chinese, we can split by space to separate title and version/other info
-            if re.match(r'[\u4e00-\u9fa5]', candidate):
-                candidate = candidate.split(' ')[0]
-
-            candidate = candidate.strip()
-            if candidate and not ignore_patterns.match(candidate):
-                self.extitle = candidate
-                return
-
+        # 保留英文标题
+        if candidate_list:
+            self.extitle = candidate_list[0].strip()
         return 
-        # Fallback: if all parts are filtered, return the first part if it exists, else empty string
-        # self.extitle = main_parts[0].strip() if main_parts else ""
 
 
     def _parse(self):
