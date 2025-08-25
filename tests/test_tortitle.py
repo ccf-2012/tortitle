@@ -434,6 +434,16 @@ TEST_CASES = [
             "cntitle": "高岭之花",
             "type": "tv",
         }
+    ),
+    (
+        "[大陆][沸腾的群山][The.Rise.of.Wanshan.2024.S01E18-E19.2160p.WEB-DL.HEVC.DDP.2Audios-QHstudIo]",
+        {
+            "title": "The Rise of Wanshan",
+            "cntitle": "沸腾的群山",
+            "type": "tv",
+            "episode": "E18-E19"
+        }
+        
     )
 ]
 

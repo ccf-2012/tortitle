@@ -96,7 +96,7 @@ class TorSubtitle:
         processed_name = name.strip()
         # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
         # processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
-        processed_name = re.sub(r"【|】", " ", processed_name).strip()
+        # processed_name = re.sub(r"【|】", " ", processed_name).strip()
         # 包含这些的，直接跳过
         if m := re.search(r"0day破解|\bFLAC\b|无损\b", processed_name, flags=re.I):
             return
@@ -109,24 +109,22 @@ class TorSubtitle:
         processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
         processed_name = re.sub(r"^[\:：]", "",  processed_name)
         # 开头的官方国语中字 跟:：
-        processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+[\:：\s/\|]*", "", processed_name, flags=re.I).strip()
+        processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
         # 开头是国家、XYZTV、卫视，带上分隔符一起删
         processed_name = re.sub(r"^(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧|\w国)[\:：\s/\|]", "", processed_name)
         processed_name = re.sub(r"^(?:\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+\b", "", processed_name)
-        # 墨西哥剧：，英剧，美国...后跟 ：:|，带上分隔符一起删
-        processed_name = re.sub(r"\b(连载\w*|\w*国漫)[\:：\s\|]", "", processed_name)
 
         # 干扰字词，可能在开头，或前2格
+        processed_name = re.sub(r"\b(连载\w*|\w*国漫|短剧)\b", "", processed_name)
         processed_name = re.sub(r"\b([全第]\w{,4}\s*集|第\d+集|S\d+|(\d+-\d+集)|第.{1,4}[季|集]|纪录|专辑|综艺|动画|剧场版)\b", "", processed_name)
         processed_name = re.sub(r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语", "", processed_name)
         processed_name = processed_name.strip()
 
-        # 为提高可读性，定义忽略模式列表
         # 中文相关的忽略模式
         chinese_ignore = [
             "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
             r"\b纪录", "简繁", r"国创\b", "翡翠台", r"\w*卫视", r"中\w+频道",
-            r"类[别型][:：]", r"\b无损\b", r"原盘\b",
+            r"类[别型][:：]", r"\b无损\b", r"原盘\b", r"\b台湾" 
         ]
         # 纯英文的忽略模式
         english_ignore = [
@@ -138,20 +136,33 @@ class TorSubtitle:
         ignore_patterns = re.compile("|".join(ignore_list), re.IGNORECASE)
         eng_pattern = re.compile("|".join(english_ignore), re.IGNORECASE)
 
-        if re.search(r'[\[\]丨|/]', processed_name):
-            blocks = re.split(r'[\[\]丨|/]', processed_name)
+        # 方括号内有特征词，则整个方括号不要了
+        bracket_blocks = re.findall(r'【[^】]*】|\[[^\]]*\]', processed_name)
+        for block in bracket_blocks:
+            if ignore_patterns.search(block):
+                processed_name = processed_name.replace(block, "", 1)
+
+        # 以 特殊标点符 或 中英文段落 分 segments
+        if re.search(r'[【】\[\]丨|/]', processed_name):
+            segments = re.split(r'[【】\[\]丨|/]', processed_name)
         else:
-            blocks = split_by_language_boundary(processed_name)
-        # clear empty parts
-        main_parts = [p for p in blocks if p.strip()]
+            segments = split_by_language_boundary(processed_name)
+        # clear empty segments
+        segments = [p for p in segments if p.strip()]
         candidate_list = []
         # 3 段之内要见到 title，否则不要了
-        for part in main_parts[:3]:
-            if contains_cjk(part):
+        for segment in segments[:3]:
+            # 这一segment以此开头，就没戏了
+            if re.match(r"^类型|导演|主演", segment.strip() ):
+                # 保留英文标题
+                if candidate_list:
+                    self.extitle = candidate_list[0].strip()
+                return 
+            if contains_cjk(segment):
                 # 所有分隔化为空格，再将空格合并
-                part = re.sub(r"[丨|/\(\)）（]", " ", part)
-                part = re.sub(r"\s+", " ", part).strip()
-                sub_parts = part.split(' ')
+                segment = re.sub(r"[丨|/\(\)）（]", " ", segment)
+                segment = re.sub(r"\s+", " ", segment).strip()
+                sub_parts = segment.split(' ')
                 for spart in sub_parts[:3]:
                     if m := ignore_patterns.search(spart):
                         continue
@@ -162,8 +173,8 @@ class TorSubtitle:
                     return
             else:
                 # 一段[丨|/]分隔的仅包括英文的，
-                if not eng_pattern.search(part):
-                    candidate_list.append(part)
+                if not eng_pattern.search(segment):
+                    candidate_list.append(segment)
 
         # 保留英文标题
         if candidate_list:
