@@ -16,7 +16,7 @@ pip install tortitle
 
 ```python
 from tortitle import TorTitle
-torrent_name = "The.Mandalorian.S01E01.1080p.WEB-DL.DDP5.1.H.264-NT"
+torrent_name = "The.Mandalorian.S01E01.1080p.WEB-DL.DDP5.1.H.264-NTC"
 title = TorTitle(torrent_name)
 
 print(f"标题: {title.title}")
@@ -32,7 +32,7 @@ print(f"制作组: {title.group}")
 torrent_name = "[美国][金钱世界][All.the.Money.in.the.World.2017.1080p.BluRay.x264.DTS.5.1-CMCC][中英字幕]"
 print(TorTitle(torrent_name).to_dict())
 # 输出：
-# {'title': 'All the Money in the World', 'cntitle': '金钱世界', 'year': '2017', 'type': 'movie', 'season': '', 'episode': ''}
+# {'title': 'All the Money in the World', 'cntitle': '金钱世界', 'year': '2017', 'type': 'movie', ....}
 ```
 
 ### 解析副标题
@@ -49,10 +49,10 @@ print(f"季: {subtitle.season}")
 print(f"集: {subtitle.episode}")
 ```
 
-## 贡献
+## Contribution
 
 欢迎提交 Pull Request。对于重大更改，请先开一个 issue 进行讨论。
 
-## 许可证
+## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
