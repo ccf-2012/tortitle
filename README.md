@@ -51,7 +51,7 @@ print(f"集: {subtitle.episode}")
 
 ## Contribution
 
-欢迎提交 Pull Request。对于重大更改，请先开一个 issue 进行讨论。
+欢迎提交 Pull Request
 
 ## License
 
