@@ -32,7 +32,7 @@ def split_by_language_boundary(text: str) -> list[str]:
         A list of strings, split according to the rules.
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*(?![一-鿆])|[^\s丨|/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\s(?![一-鿆])|[^\s丨|/]+"
     
     return re.findall(pattern, text)
 
@@ -107,11 +107,10 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        if re.search(r"0day破解|\[FLAC\]|\b无损\b", processed_name, flags=re.I):
+        if re.search(r"0day破解|\bFLAC\b|\b无损\b", processed_name, flags=re.I):
             return
         # 这些开头的，直接不处理
         if re.match(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|导演|主演\b)", processed_name, flags=re.I):
-            self.extitle = ''
             return
 
         # 开头的一些明确pattern，带上分隔符一起删
@@ -126,7 +125,8 @@ class TorSubtitle:
             r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b",
             "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
             r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"中\w+频道",
-            r"类[别型][:：]",  r"\b无损\b", r"原盘\b", r"\b台湾\b", "国漫", "连载", "短剧", "动画", "剧场版",
+            r"类[别型][:：]",  r"\b无损\b", r"原盘\b", "国漫", "连载", "短剧", "动画", "剧场版", 
+            "赛季", r"台湾\(区\)", "南韩" # ttg 特有
         ]
         reject_pattern_en = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by "
@@ -138,7 +138,7 @@ class TorSubtitle:
         # 【】方括号内有特征词，则整个方括号不要了
         bracket_blocks = re.findall(r'【[^】]*】', processed_name)
         for block in bracket_blocks:
-            if reject_pattern.search(block):
+            if not re.search(r"[丨|/]", block) and reject_pattern.search(block):
                 processed_name = processed_name.replace(block, "", 1)
 
         # 以 特殊标点符 或 中英文段落 分 segments
