@@ -94,7 +94,7 @@ class TorSubtitle:
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w剧|墨西哥剧|新加坡剧)[\:：]*",
-            r"^\(?新\)?", r"\b([全第]\w{1,4}\s*[季|集])",
+            r"^\(新\)", r"\b([全第].{1,5}[季|集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
         part_title = clean_pattern.sub("", part_title)
@@ -107,14 +107,14 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        if re.search(r"0day破解|\bFLAC\b|\b无损\b", processed_name, flags=re.I):
+        if re.search(r"0day破解|\bFLAC\b|\b无损\b|MQA编码", processed_name, flags=re.I):
             return
         # 这些开头的，直接不处理
-        if re.match(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|导演|主演\b)", processed_name, flags=re.I):
+        if re.match(r"^([全第].{1,5}[季|集]|[简中].*?字幕|导演|主演\b)", processed_name, flags=re.I):
             return
 
         # 开头的一些明确pattern，带上分隔符一起删
-        processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
+        processed_name = re.sub(r"(\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?|港剧:?\s*经典台|台湾\(区\))", "", processed_name)
         processed_name = re.sub(r"^[\:：]", "",  processed_name)
         # 开头的官方国语中字
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
@@ -122,11 +122,11 @@ class TorSubtitle:
         reject_pattern_cn = [
             r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语",
             r"纪录|专辑|综艺|动画|剧场版\b",
-            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b",
-            "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
+            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b", 
+            "中字", r"\b导演", r"点播\b", r"\w+字幕",
             r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"中\w+频道",
-            r"类[别型][:：]",  r"\b无损\b", r"原盘\b", "国漫", "连载", "短剧", "动画", "剧场版", 
-            "赛季", r"台湾\(区\)", "南韩" # ttg 特有
+            r"类[别型][:：]",  r"\b无损\b", r"原盘\b", "国漫", "连载", "短剧", "动画", "剧场版", "赛季",
+            r"\b\w语\b", r"\b\w国\b", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",                 
         ]
         reject_pattern_en = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by "

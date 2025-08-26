@@ -139,7 +139,7 @@ class TorTitle:
     def _handle_bracket_title(self):
         if self.title.startswith('[') and self.title.endswith(']'):
             parts = [part.strip() for part in self.title[1:-1].split('][') if part.strip()]
-            keyword_pattern = r'1080p|2160p|720p|H\.?26[45]|x26[45]|全.{1,4}集'
+            keyword_pattern = r'1080p|2160p|4K|Web-?DL|720p|H\.?26[45]|x26[45]|全.{1,4}集'
             
             main_part = ''
             keyword_idx = -1
@@ -265,7 +265,7 @@ class TorTitle:
     def _polish_title(self):
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
-            'BTV', r'CCTV\s*\d+(HD|\+)?', 'HunanTV', r'Top\s*\d+',
+            r'^\w+TV\b', r'^Jade\b', '^TVBClassic' r'CCTV\s*\d+(HD|\+)?',  r'Top\s*\d+',
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED', 

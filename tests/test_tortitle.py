@@ -444,7 +444,25 @@ TEST_CASES = [
             "episode": "E18-E19"
         }
         
-    )
+    ),
+    (
+        "Jade Journey To Guangdong From East To North EP03 20250806 HDTV 1080i H264-HDHTV",
+        {
+            "title": "Journey To Guangdong From East To North",
+            "type": "tv",
+            "episode": "EP03",
+        }
+    ),
+    (
+        "[加拿大/美国/爱尔兰][爱尔兰之血][Irish.Blood.S01E04.Father.Al.1080p.AMZN.WEB-DL.DDP5.1.H.264-RAWR]",
+        {
+            "title": "Irish Blood",
+            "cntitle": "爱尔兰之血",
+            "type": "tv",
+            "season": "S01",
+            "episode": "E04",
+        }
+    ),
 ]
 
 
