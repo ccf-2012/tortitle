@@ -89,57 +89,56 @@ class TorSubtitle:
             elif episode_str:
                 self.episode = f"E{episode_str.zfill(2)}"
 
+    def _part_clean(self, part_title: str) -> str:
+        """Cleans up the extracted title."""
+        clean_pattern_list = [
+            r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
+            r"\b(\w剧|墨西哥剧|新加坡剧)[\:：]*",
+            r"^\(?新\)?", r"\b([全第]\w{1,4}\s*[季|集])",
+        ]
+        clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
+        part_title = clean_pattern.sub("", part_title)
+        part_title = re.sub(r"[\)\()]", " ", part_title)
+        return part_title.strip()
 
     def _parse_extitle(self, name: str):
         """Parses the main title (extitle)."""
         self.extitle = ""
         processed_name = name.strip()
-        # [] 【 】都展开，对中文标题来说，标以这样方括号的，有可能是主要信息
-        # processed_name = re.sub(r"\[|\]|【|】", " ", processed_name).strip()
-        # processed_name = re.sub(r"【|】", " ", processed_name).strip()
+
         # 包含这些的，直接跳过
-        if m := re.search(r"0day破解|\bFLAC\b|无损\b", processed_name, flags=re.I):
+        if re.search(r"0day破解|\[FLAC\]|\b无损\b", processed_name, flags=re.I):
             return
         # 这些开头的，直接不处理
-        if m := re.search(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|导演|主演\b|无损\b)", processed_name, flags=re.I):
+        if re.match(r"^((全|第).{1,4}[季|集]|[简中].*?字幕|导演|主演\b)", processed_name, flags=re.I):
             self.extitle = ''
             return
 
-        # 开头的一些可能字词，先删掉：...新番，官方国语中字，国漫，国家，xxx剧，xxx台/卫视，综艺，带上分隔符一起删
+        # 开头的一些明确pattern，带上分隔符一起删
         processed_name = re.sub(r"\d+\s*年\s*\d+\s*月\s*\w*番[\:：\s/\|]?", "", processed_name)
         processed_name = re.sub(r"^[\:：]", "",  processed_name)
         # 开头的官方国语中字
-        processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|国漫\s*|国创\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
-        # 开头是国家、XYZTV、卫视
-        processed_name = re.sub(r"^(?:\(?新\)?|\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+\b", "", processed_name)
+        processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
 
-        # 干扰字词，可能在开头，或前2格
-        processed_name = re.sub(r"\b(日本|瑞典|挪威|大陆|香港|港台|\w剧|(墨西哥|新加坡)剧)[\]\:：\s/\|]", "", processed_name)
-        processed_name = re.sub(r"\b(连载\w*|\w*国漫|短剧)\b", "", processed_name)
-        processed_name = re.sub(r"\b([全第]\w{,4}\s*集|第\d+集|S\d+|(\d+-\d+集)|第.{1,4}[季|集]|纪录|专辑|综艺|动画|剧场版)\b", "", processed_name)
-        processed_name = re.sub(r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语", "", processed_name)
-        processed_name = processed_name.strip()
-
-        # 中文相关的忽略模式
-        chinese_ignore = [
+        reject_pattern_cn = [
+            r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语",
+            r"纪录|专辑|综艺|动画|剧场版\b",
+            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b",
             "中字", r"\b导演", r"\b\w语\b", r"\b\w国\b", r"点播\b", r"\w+字幕",
-            r"\b纪录", "简繁", r"国创\b", "翡翠台", r"\w*卫视", r"中\w+频道",
-            r"类[别型][:：]", r"\b无损\b", r"原盘\b", r"\b台湾\b",
+            r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"中\w+频道",
+            r"类[别型][:：]",  r"\b无损\b", r"原盘\b", r"\b台湾\b", "国漫", "连载", "短剧", "动画", "剧场版",
         ]
-        # 纯英文的忽略模式
-        english_ignore = [
+        reject_pattern_en = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by "
         ]
+        reject_pattern_list = reject_pattern_cn + reject_pattern_en
+        reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
+        eng_pattern = re.compile("|".join(reject_pattern_en), re.IGNORECASE)
 
-        # 合并所有模式并编译正则表达式
-        ignore_list = chinese_ignore + english_ignore
-        ignore_patterns = re.compile("|".join(ignore_list), re.IGNORECASE)
-        eng_pattern = re.compile("|".join(english_ignore), re.IGNORECASE)
-
-        # 方括号内有特征词，则整个方括号不要了
-        bracket_blocks = re.findall(r'【[^】]*】|\[[^\]]*\]', processed_name)
+        # 【】方括号内有特征词，则整个方括号不要了
+        bracket_blocks = re.findall(r'【[^】]*】', processed_name)
         for block in bracket_blocks:
-            if ignore_patterns.search(block):
+            if reject_pattern.search(block):
                 processed_name = processed_name.replace(block, "", 1)
 
         # 以 特殊标点符 或 中英文段落 分 segments
@@ -159,15 +158,21 @@ class TorSubtitle:
                     self.extitle = candidate_list[0].strip()
                 return 
             if contains_cjk(segment):
-                # 所有分隔化为空格，再将空格合并
-                segment = re.sub(r"[丨|/\(\)）（]", " ", segment)
+                # 分隔化为空格，再将空格合并
+                segment = re.sub(r"[）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
                 sub_parts = segment.split(' ')
                 for spart in sub_parts[:3]:
-                    if m := ignore_patterns.search(spart):
+                    # 包含 reject_pattern 的，跳过
+                    if reject_pattern.search(spart):
                         continue
-                    candidate_list.append(spart)
                     if not contains_cjk(spart):
+                        # 全英文，等待最后保留
+                        candidate_list.append(spart)
+                        continue
+                    # 清理后还有内容的，作为标题
+                    spart = self._part_clean(spart)
+                    if not spart:
                         continue
                     self.extitle = spart
                     return
