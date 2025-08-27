@@ -463,6 +463,20 @@ TEST_CASES = [
             "episode": "E04",
         }
     ),
+    (
+        "1980.Star.Wars.Episode.V-.The.Empire.Strikes.Back.1920x816.BDRip.x264.DTS-HD.MA.strm",
+        {
+            "title": "1980 Star Wars Episode V The Empire Strikes Back",
+            "year": "1980"
+        }
+    ),
+    (
+        "1979.Alien.1920x816.BDRip.x264.DTS-HD.MA.strm",
+        {
+            "title": "1979 Alien",
+            "year": "1979"
+        }
+    )
 ]
 
 

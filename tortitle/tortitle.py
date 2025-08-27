@@ -134,6 +134,8 @@ class TorTitle:
         self.title = cut_ext(self.title)
         self.title = re.sub(r'^【.*】', '', self.title, flags=re.I)
         self.title = re.sub(r'^\w+TV\b', '', self.title, flags=re.I)
+        # if re.search(r"\d+x\d+", self.title, flags=re.I):
+        #     self.title = re.sub(r'^\d{4}[\s\.]', '', self.title, flags=re.I)
         self.title = delimer_to_space(self.title)
 
     def _handle_bracket_title(self):
@@ -162,7 +164,7 @@ class TorTitle:
                     self.cntitle = full_cntitle.split(' ')[0].strip()
 
     def _extract_year(self):
-        potential_years = re.findall(r'(19\d{2}|20\d{2})(?:\d{4})?\b', self.title)
+        potential_years = re.findall(r'(19\d{2}|20\d{2})(?:\d{4})?\b', self.raw_name)
         if potential_years:
             self.year = potential_years[-1]
             self._year_pos = self.title.rfind(self.year)
@@ -213,6 +215,9 @@ class TorTitle:
 
     def _cut_s_year_season(self):
         positions = [p for p in [self._year_pos, self._se_pos] if p > 0]
+        if not positions:
+            if try_match := re.search(r"(\d+x\d+|BDRip|.26[45])", self.title, flags=re.I):
+                positions = [try_match.span(0)[0]]
         if positions:
             cut_pos = min(positions)
             self.title = self.title[:cut_pos]
@@ -277,6 +282,7 @@ class TorTitle:
 
         self.title = hyphen_to_space(self.title)
         self.title = cut_aka(self.title)
+        self.title = re.sub(r'\s+', ' ', self.title)
 
         if not self._check_title() and self.cntitle:
             self.title = self.cntitle
