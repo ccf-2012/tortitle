@@ -93,7 +93,7 @@ class TorSubtitle:
         """Cleans up the extracted title."""
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
-            r"\b(\w{1,2}剧|墨西哥剧|新加坡剧)[\:：]*",
+            r"\b(\w{1,2}剧|墨西哥剧|新加坡剧)[\:：]",
             r"^\(新\)", r"\b([全第].{1,5}[季|集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
@@ -120,7 +120,7 @@ class TorSubtitle:
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
 
         reject_pattern_cn = [
-            r"1080p|2160p|720p|4K\b|IMax\b|杜比视界|中\w双语",
+            r"杜比视界|中\w双语",
             r"纪录|专辑|综艺|动画|剧场版\b",
             r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b", 
             "中字", r"\b导演", r"点播\b", r"\w+字幕",
@@ -129,7 +129,7 @@ class TorSubtitle:
             r"\b\w语\b", r"\b\w国\b", r"^\w{1,2}[剧|劇]$", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",                 
         ]
         reject_pattern_en = [
-            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by "
+            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)"
         ]
         reject_pattern_list = reject_pattern_cn + reject_pattern_en
         reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
@@ -179,7 +179,7 @@ class TorSubtitle:
             else:
                 # 一段[丨|/]分隔的仅包括英文的，
                 if not eng_pattern.search(segment):
-                    candidate_list.append(segment)
+                        candidate_list.append(segment)
 
         # 保留英文标题
         if candidate_list:

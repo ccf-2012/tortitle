@@ -476,6 +476,12 @@ TEST_CASES = [
             "title": "1979 Alien",
             "year": "1979"
         }
+    ),
+    (
+        "Anpan.S01.1080p.KKTV.WEB-DL.AAC2.0.H.264-CHDWEB",
+        {
+            "title": "Anpan"
+        }
     )
 ]
 
