@@ -48,7 +48,7 @@ class TorSubtitle:
         Args:
             raw_name: The raw string from the subtitle file name or torrent title.
         """
-        self.raw_name = raw_name
+        self.raw_name = raw_name  or  ""
         self.extitle = ""
         self.season = ""
         self.episode = ""

@@ -53,8 +53,8 @@ def is_0day_name(item_string):
 
 class TorTitle:
     def __init__(self, name):
-        self.raw_name = name
-        self.title = name
+        self.raw_name = name  or ""
+        self.title = name or ""
         self.cntitle = ''
         self.year = ''
         self.type = 'movie'
