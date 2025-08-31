@@ -93,7 +93,7 @@ class TorSubtitle:
         """Cleans up the extracted title."""
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
-            r"\b(\w{1,2}剧|墨西哥剧|新加坡剧)[\:：]",
+            r"\b(\w{1,3}剧|澳大利亚剧|马来西亚剧)[\:：]",
             r"^\(新\)", r"\b([全第].{1,5}[季|集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
