@@ -33,7 +33,7 @@ def split_by_language_boundary(text: str) -> list[str]:
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*(?![一-鿆])|[^\s丨|/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![一-鿆：，])|[^\s丨|/]+"
     
     return re.findall(pattern, text)
 
@@ -127,7 +127,7 @@ class TorSubtitle:
             r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"[中央]\w+频道", r"^央视"
             r"类[别型][:：]",  r"\b无损\b", r"原盘\b", r"国漫\b", r"连载\b", r"动画\b", r"剧场版\b", r"赛季\b",
             r"\b\w语\b", r"\b\w国\b", r"^\w{1,2}[剧|劇]$", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",    
-            r"\b(热门|其他)\b", r"\b\d+集\b", 
+            r"\b(热门|其他)\b", r"\b\d+集\b", r"\b完结\b", r"\bDIY", r"原盘\b"
         ]
         reject_pattern_en = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)"
@@ -139,7 +139,7 @@ class TorSubtitle:
         # 【】方括号内有特征词，则整个方括号不要了
         bracket_blocks = re.findall(r'【[^】]*】', processed_name)
         for block in bracket_blocks:
-            if not re.search(r"[丨|/]", block) and reject_pattern.search(block):
+            if not re.search(r"[丨|]", block) and reject_pattern.search(block):
                 processed_name = processed_name.replace(block, "", 1)
 
         # 以 特殊标点符 或 中英文段落 分 segments
@@ -153,7 +153,7 @@ class TorSubtitle:
         # 3 段之内要见到 title，否则不要了
         for segment in segments[:3]:
             # 这一segment以此开头，就没戏了
-            if re.match(r"^类型|导演|主演", segment.strip() ):
+            if re.match(r"^类型|类别|完结|导演|主演", segment.strip() ):
                 # 保留英文标题
                 if candidate_list:
                     self.extitle = candidate_list[0].strip()
