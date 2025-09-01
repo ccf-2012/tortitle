@@ -142,8 +142,8 @@ class TorSubtitle:
                 processed_name = processed_name.replace(block, "", 1)
 
         # 以 特殊标点符 或 中英文段落 分 segments
-        if re.search(r'[【】\[\]丨|/]', processed_name):
-            segments = re.split(r'[【】\[\]丨|/]', processed_name)
+        if re.search(r'[「【】\[\]丨|/」]', processed_name):
+            segments = re.split(r'[「【】\[\]丨|/」]', processed_name)
         else:
             segments = split_by_language_boundary(processed_name)
         # clear empty segments
@@ -161,7 +161,7 @@ class TorSubtitle:
                 # 分隔化为空格，再将空格合并
                 segment = re.sub(r"[）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
-                sub_parts = segment.split(' ')
+                sub_parts = re.split(r'(?<!:)\s', segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
