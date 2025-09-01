@@ -18,12 +18,12 @@ def contains_cjk(str):
 
 def split_by_language_boundary(text: str) -> list[str]:
     """
-    Splits a string by spaces, but keeps English phrases together.
+    Splits a string by language boundaries (e.g., between English and CJK characters).
 
     The function uses a regular expression to find two types of patterns:
     1. A sequence of English words/numbers that can be separated by spaces,
-       colons, dots, or hyphens.
-    2. Any other sequence of non-space characters.
+       colons, dots, or hyphens (e.g., "The Runarounds", "Season 1").
+    2. A sequence of CJK characters (e.g., "第一季").
 
     Args:
         text: The input string to split.
@@ -32,7 +32,8 @@ def split_by_language_boundary(text: str) -> list[str]:
         A list of strings, split according to the rules.
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\s(?![一-鿆])|[^\s丨|/]+"
+    # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*(?![一-鿆])|[^\s丨|/]+"
     
     return re.findall(pattern, text)
 
@@ -162,7 +163,8 @@ class TorSubtitle:
                 segment = re.sub(r"[\)\(）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
                 # sub_parts = re.split(r'(?<![:\-])[\s]', segment)
-                sub_parts = re.split(r" ", segment)
+                # sub_parts = re.split(r" ", segment)
+                sub_parts = split_by_language_boundary(segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
