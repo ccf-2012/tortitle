@@ -123,7 +123,7 @@ class TorSubtitle:
             r"纪录|专辑|综艺|动画|剧场版\b",
             r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|电影|韩综)+)\b", 
             "中字", r"\b导演", r"点播\b", r"\w+字幕",
-            r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"中\w+频道", 
+            r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"[中央]\w+频道", r"^央视\w+"
             r"类[别型][:：]",  r"\b无损\b", r"原盘\b", "国漫", "连载", "动画", "剧场版", "赛季",
             r"\b\w语\b", r"\b\w国\b", r"^\w{1,2}[剧|劇]$", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",    
             r"\b(热门|其他)\b", r"\b\d+集\b", 
@@ -161,13 +161,14 @@ class TorSubtitle:
                 # 分隔化为空格，再将空格合并
                 segment = re.sub(r"[\)\(）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
-                sub_parts = re.split(r'(?<![:\-])[\s]', segment)
+                # sub_parts = re.split(r'(?<![:\-])[\s]', segment)
+                sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
                         continue
-                    if not contains_cjk(spart):
-                        # 全英文，等待最后保留
+                    if not contains_cjk(spart) or spart.endswith(":"):
+                        # 全英文，以 : 结尾的，等待最后再考虑
                         candidate_list.append(spart)
                         continue
                     # 清理后还有内容的，作为标题
@@ -183,7 +184,7 @@ class TorSubtitle:
 
         # 保留英文标题
         if candidate_list:
-            self.extitle = candidate_list[0].strip()
+            self.extitle = candidate_list[-1].strip()
         return 
 
 
