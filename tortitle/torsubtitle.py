@@ -125,7 +125,8 @@ class TorSubtitle:
             "中字", r"\b导演", r"点播\b", r"\w+字幕",
             r"\b纪录", "简繁", r"国创", "翡翠台", r"\w*卫视", r"中\w+频道", 
             r"类[别型][:：]",  r"\b无损\b", r"原盘\b", "国漫", "连载", "动画", "剧场版", "赛季",
-            r"\b\w语\b", r"\b\w国\b", r"^\w{1,2}[剧|劇]$", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",                 
+            r"\b\w语\b", r"\b\w国\b", r"^\w{1,2}[剧|劇]$", r"\b南韩\b", r"\b加拿大\b", r"\b爱尔兰\b",    
+            r"\b(热门|其他)\b", r"\b\d+集\b",            
         ]
         reject_pattern_en = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)"
