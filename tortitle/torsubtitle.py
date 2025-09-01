@@ -94,11 +94,10 @@ class TorSubtitle:
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w{1,3}剧|澳大利亚剧|马来西亚剧|港綜)[\:：]",
-            r"^\(新\)", r"\b([全第].{1,5}[季|集])", 
+            r"^新$", r"\b([全第].{1,5}[季|集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
         part_title = clean_pattern.sub("", part_title)
-        part_title = re.sub(r"[\)\()]", " ", part_title)
         return part_title.strip()
 
     def _parse_extitle(self, name: str):
@@ -159,7 +158,7 @@ class TorSubtitle:
                 return 
             if contains_cjk(segment):
                 # 分隔化为空格，再将空格合并
-                segment = re.sub(r"[）（]", " ", segment)
+                segment = re.sub(r"[\)\(）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
                 sub_parts = re.split(r'(?<!:)\s', segment)
                 for spart in sub_parts[:3]:
