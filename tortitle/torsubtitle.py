@@ -93,7 +93,7 @@ class TorSubtitle:
         """Cleans up the extracted title."""
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
-            r"\b(\w{1,3}剧|澳大利亚剧|马来西亚剧|港綜)[\:：]",
+            r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
             r"^新$", r"\b([全第].{1,5}[季|集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
@@ -161,7 +161,7 @@ class TorSubtitle:
                 # 分隔化为空格，再将空格合并
                 segment = re.sub(r"[\)\(）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
-                sub_parts = re.split(r'(?<!:)\s', segment)
+                sub_parts = re.split(r'(?<![:\-])[\s]', segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
