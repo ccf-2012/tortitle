@@ -130,7 +130,7 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码|破解版\b"
+        NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码|破解版\b|^剩余时间"
         if re.search(NOT_MOVIETV_PATTERN, processed_name, flags=re.I):
             return
         
