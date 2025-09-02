@@ -10,26 +10,26 @@ CHINESE_NUMERALS = {
 }
 
 def chinese_to_arabic(s: str) -> int | None:
-    """Converts a Chinese numeral string to an integer."""
+    """将中文数字字符串转换为整数。"""
     return CHINESE_NUMERALS.get(s)
 
 def contains_cjk(str):
+    """检查字符串是否包含中日韩字符。"""
     return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc]', str)
 
 def split_by_language_boundary(text: str) -> list[str]:
     """
-    Splits a string by language boundaries (e.g., between English and CJK characters).
+    在语言边界（例如英语和中日韩字符之间）分割字符串。
 
-    The function uses a regular expression to find two types of patterns:
-    1. A sequence of English words/numbers that can be separated by spaces,
-       colons, dots, or hyphens (e.g., "The Runarounds", "Season 1").
-    2. A sequence of CJK characters (e.g., "第一季").
+    该函数使用正则表达式查找两种模式：
+    1. 可以由空格、冒号、点或连字符分隔的英文单词/数字序列（例如，“The Runarounds”，“Season 1”）。
+    2. 中日韩字符序列（例如，“第一季”）。
 
     Args:
-        text: The input string to split.
+        text: 要分割的输入字符串。
 
     Returns:
-        A list of strings, split according to the rules.
+        根据规则分割的字符串列表。
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
@@ -38,21 +38,23 @@ def split_by_language_boundary(text: str) -> list[str]:
     return re.findall(pattern, text)
 
 def split_by_isolate_space(text):
+    """按非冒号、连字符或逗号前的空格分割字符串。"""
     return re.split(r'(?<![:\-,])[\s]', text)
 
 def contains_eng_word(str):
+    """检查字符串是否包含至少两个字母的英文单词。"""
     return re.search(r'(?<![一-鿆：，])[a-zA-Z]{2,}\b', str)
 
 class TorSubtitle:
     """
-    Parses a raw subtitle string to extract title, season, and episode information.
+    解析原始字幕字符串以提取标题、季和集信息。
     """
     def __init__(self, raw_name: str):
         """
-        Initializes the TorSubtitle object and parses the raw name.
+        初始化 TorSubtitle 对象并解析原始名称。
 
         Args:
-            raw_name: The raw string from the subtitle file name or torrent title.
+            raw_name: 来自字幕文件名或种子标题的原始字符串。
         """
         self.raw_name = raw_name  or  ""
         self.extitle = ""
@@ -65,8 +67,7 @@ class TorSubtitle:
         self._parse()
 
     def _parse_season(self, name: str):
-        """Parses season information."""
-        # Pattern for "第三季", "Season 4"
+        # “第三季”、“Season 4”的模式
         season_pattern = r'(?:第([一二三四五六七八九十]+|[0-9]+)季|Season\s*([0-9]+))'
         match = re.search(season_pattern, name, re.IGNORECASE)
         if match:
@@ -78,16 +79,15 @@ class TorSubtitle:
                 self.season = chinese_to_arabic(season_str)
 
     def _parse_episode(self, name: str):
-        """Parses episode information."""
-        # Pattern for "第01集", "第1-2集", "第1-10集", "全10集"
+        # “第01集”、“第1-2集”、“第1-10集”、“全10集”的模式
         episode_pattern = r'(?:第?([0-9]+(?:-[0-9]+)?)[集回]|全([0-9]+)[集回])'
         match = re.search(episode_pattern, name)
         if match:
             self.episode_pos = match.span(0)[0]
             episode_str = ""
-            if match.group(1):  # "第1-2集" or "第1集"
+            if match.group(1):  # “第1-2集”或“第1集”
                 episode_str = match.group(1)
-            elif match.group(2):  # "全10集"
+            elif match.group(2):  # “全10集”
                 self.total_episodes = int(match.group(2))
                 # episode_str = f"1-{self.total_episodes}"
 
@@ -100,7 +100,7 @@ class TorSubtitle:
                 self.episode = f"E{episode_str.zfill(2)}"
 
     def _part_clean(self, part_title: str) -> str:
-        """Cleans up the extracted title."""
+        """通过删除不需要的关键字来清理提取的标题。"""
         POST_CUT_PATTERN_LIST = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
@@ -110,7 +110,6 @@ class TorSubtitle:
         return part_title.strip()
 
     def _parse_extitle(self, name: str):
-        """Parses the main title (extitle)."""
         self.extitle = ""
         processed_name = name.strip()
 
@@ -206,9 +205,6 @@ class TorSubtitle:
 
 
     def _parse(self):
-        """
-        Runs the parsing logic for season, episode, and title.
-        """
         self._parse_season(self.raw_name)
         self._parse_episode(self.raw_name)
         process_name = self.raw_name
@@ -219,7 +215,6 @@ class TorSubtitle:
         self._parse_extitle(process_name)
 
     def to_dict(self):
-        """Returns the parsed data as a dictionary."""
         return {
             "extitle": self.extitle,
             "season": self.season,
@@ -229,8 +224,4 @@ class TorSubtitle:
 
 # For backward compatibility, we can keep a function that uses the class.
 def parse_subtitle(name: str) -> str:
-    """
-    Parses a raw subtitle string to extract the movie/series title.
-    This is a wrapper for the TorSubtitle class for backward compatibility.
-    """
     return TorSubtitle(name).extitle
