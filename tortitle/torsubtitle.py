@@ -118,7 +118,7 @@ class TorSubtitle:
     def _part_clean(self, part_title: str) -> str:
         """通过删除不需要的关键字来清理提取的标题。"""
         POST_CUT_PATTERN_LIST = [
-            r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
+            r"\b(\w{1,3}剧|[日国动]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
             # r"剧场版",
         ]
         clean_pattern = re.compile("|".join(POST_CUT_PATTERN_LIST), re.IGNORECASE)
