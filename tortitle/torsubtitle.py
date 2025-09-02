@@ -102,7 +102,6 @@ class TorSubtitle:
     def _part_clean(self, part_title: str) -> str:
         """通过删除不需要的关键字来清理提取的标题。"""
         POST_CUT_PATTERN_LIST = [
-            r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
         ]
         clean_pattern = re.compile("|".join(POST_CUT_PATTERN_LIST), re.IGNORECASE)
@@ -135,9 +134,9 @@ class TorSubtitle:
             r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清", r"CHC高清\w+",
             r"点播\b", r"\w+字幕", "简繁", 
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
-            r"\b(\w语|\w国|南韩|加拿大|爱尔兰|墨西哥|西班牙)\b", 
+            r"\b(\w语|\w国|南韩|印度|瑞士|瑞典|挪威|大陆|香港|港台|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇])$",
-            r"\b(热门|其他|完结|无损)\b", 
+            r"\b(热门|其他|正片|完结|无损)\b", 
             r"\b(杜比视界|中\w双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
             r"(原盘|连载|赛季|剧场版)\b", r"\b(原盘)"
         ]
