@@ -98,6 +98,7 @@ test_cases_for_title_parsing = [
     ("E.T.外星人/外星人E.T./外星人/ET/E.T. the Extra-Terrestrial/A Boy's Life", "E.T.外星人"),
     # ("霹雳布袋戏 - 霹雳靖玄录 全20集 【普通话】", "霹雳布袋戏 - 霹雳靖玄录")
     ("Acapulco 第 2 季", "Acapulco"),
+    ("S01 1-8集", "")
 ]   
 
 

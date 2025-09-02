@@ -54,7 +54,9 @@ class TorSubtitle:
         self.raw_name = raw_name  or  ""
         self.extitle = ""
         self.season = ""
+        self.season_pos = 0
         self.episode = ""
+        self.episode_pos = 0
         self.total_episodes = ""
 
         self._parse()
@@ -65,6 +67,7 @@ class TorSubtitle:
         season_pattern = r'(?:第([一二三四五六七八九十]+|[0-9]+)季|Season\s*([0-9]+))'
         match = re.search(season_pattern, name, re.IGNORECASE)
         if match:
+            self.season_pos = match.span(0)[0]
             season_str = match.group(1) or match.group(2)
             if season_str.isdigit():
                 self.season = int(season_str)
@@ -74,9 +77,10 @@ class TorSubtitle:
     def _parse_episode(self, name: str):
         """Parses episode information."""
         # Pattern for "第01集", "第1-2集", "第1-10集", "全10集"
-        episode_pattern = r'(?:第([0-9]+(?:-[0-9]+)?)集|全([0-9]+)集)'
+        episode_pattern = r'(?:第?([0-9]+(?:-[0-9]+)?)[集回]|全([0-9]+)[集回])'
         match = re.search(episode_pattern, name)
         if match:
+            self.episode_pos = match.span(0)[0]
             episode_str = ""
             if match.group(1):  # "第1-2集" or "第1集"
                 episode_str = match.group(1)
@@ -97,7 +101,7 @@ class TorSubtitle:
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
-            r"\b([全第].{1,5}[季集])", 
+            # r"(\d+[集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
         part_title = clean_pattern.sub("", part_title)
@@ -127,7 +131,7 @@ class TorSubtitle:
 
         # 分段后包含以下pattern，整段删
         reject_pattern_cn = [
-            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道",
+            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道",
             r"点播\b", r"\w+字幕", "简繁", 
             r"\b(\w语|\w国|南韩|加拿大|爱尔兰)\b", r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|完结|无损)\b", 
@@ -135,7 +139,7 @@ class TorSubtitle:
             r"(原盘|连载|赛季|剧场版)\b",
         ]
         reject_pattern_en = [
-            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)"
+            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
         ]
         reject_pattern_list = reject_pattern_cn + reject_pattern_en
         reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
@@ -203,7 +207,12 @@ class TorSubtitle:
         """
         self._parse_season(self.raw_name)
         self._parse_episode(self.raw_name)
-        self._parse_extitle(self.raw_name)
+        process_name = self.raw_name
+        positions = [p for p in [self.season_pos, self.episode_pos] if p > 0]
+        if positions:
+            cut_pos = min(positions)
+            process_name = self.raw_name[:cut_pos]
+        self._parse_extitle(process_name)
 
     def to_dict(self):
         """Returns the parsed data as a dictionary."""
