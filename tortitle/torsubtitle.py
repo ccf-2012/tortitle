@@ -33,10 +33,12 @@ def split_by_language_boundary(text: str) -> list[str]:
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![一-鿆：，])|[^\s丨|/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![一-鿆：，])|[^\s丨|\-/]+"
     
     return re.findall(pattern, text)
 
+def contains_eng_word(str):
+    return re.search(r'(?<![一-鿆：，])[a-zA-Z]{2,}\b', str)
 
 class TorSubtitle:
     """
@@ -95,7 +97,7 @@ class TorSubtitle:
         clean_pattern_list = [
             r"\b(日本|瑞典|挪威|大陆|香港|港台)\b",
             r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
-            r"\b([全第].{1,5}[季|集])", 
+            r"\b([全第].{1,5}[季集])", 
         ]
         clean_pattern = re.compile("|".join(clean_pattern_list), re.IGNORECASE)
         part_title = clean_pattern.sub("", part_title)
@@ -107,10 +109,14 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        if re.search(r"0day破解|\bFLAC\b|\b无损\b|MQA编码", processed_name, flags=re.I):
+        NOT_MOVIETV_PATTERN = r"0day破解|\bFLAC\b|\b无损\b|MQA编码"
+        if re.search(NOT_MOVIETV_PATTERN, processed_name, flags=re.I):
             return
-        # 这些开头的，直接不处理跳过
-        if re.match(r"^([全第].{1,5}[季|集]|[简中].*?字幕|导演|主演\b)", processed_name, flags=re.I):
+        
+        # 片名应在这些之前出现
+        AFTER_NAME_PATTERN = r"\b([全第].{1,5}[季集回]|导演|主演\b).*"
+        processed_name = re.sub(AFTER_NAME_PATTERN, "", processed_name, flags=re.I).strip()
+        if not processed_name:
             return
 
         # 开头的一些明确pattern，带上分隔符一起删
@@ -122,7 +128,7 @@ class TorSubtitle:
         # 分段后包含以下pattern，整段删
         reject_pattern_cn = [
             r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道",
-            r"\b导演", r"点播\b", r"\w+字幕", "简繁",  r"\b\d+集\b",
+            r"点播\b", r"\w+字幕", "简繁", 
             r"\b(\w语|\w国|南韩|加拿大|爱尔兰)\b", r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|完结|无损)\b", 
             r"\b(杜比视界|中\w双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
@@ -142,8 +148,8 @@ class TorSubtitle:
                 processed_name = processed_name.replace(block, "", 1)
 
         # 以 特殊标点符 或 中英文段落 分 segments
-        if re.search(r'[「【】\[\]丨|/」]', processed_name):
-            segments = re.split(r'[「【】\[\]丨|/」]', processed_name)
+        if re.search(r'[「」【】\[\]丨|/]', processed_name):
+            segments = re.split(r'[「」【】\[\]丨|/]', processed_name)
         else:
             segments = split_by_language_boundary(processed_name)
         # clear empty segments
@@ -161,9 +167,11 @@ class TorSubtitle:
                 # 分隔化为空格，再将空格合并
                 segment = re.sub(r"[\)\(）（]", " ", segment)
                 segment = re.sub(r"\s+", " ", segment).strip()
-                # sub_parts = re.split(r'(?<![:\-])[\s]', segment)
-                # sub_parts = re.split(r" ", segment)
-                sub_parts = split_by_language_boundary(segment)
+                if contains_eng_word(segment):
+                    sub_parts = split_by_language_boundary(segment)
+                else:
+                    # sub_parts = re.split(r'(?<![:\-])[\s]', segment)
+                    sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
@@ -185,7 +193,7 @@ class TorSubtitle:
 
         # 保留英文标题
         if candidate_list:
-            self.extitle = candidate_list[-1].strip()
+            self.extitle = candidate_list[0].strip()
         return 
 
 
