@@ -15,7 +15,23 @@ def chinese_to_arabic(s: str) -> int | None:
 
 def contains_cjk(str):
     """检查字符串是否包含中日韩字符。"""
-    return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc]', str)
+    """
+    主要CJK区块：
+
+    CJK统一汉字：U+4E00-U+9FFF
+    CJK统一汉字扩展A：U+3400-U+4DBF
+    CJK统一汉字扩展B：U+20000-U+2A6DF
+    CJK统一汉字扩展C：U+2A700-U+2B73F
+    CJK统一汉字扩展D：U+2B740-U+2B81F
+    CJK统一汉字扩展E：U+2B820-U+2CEAF
+
+    韩文（한글/Hangul）专用区块：
+
+    韩文字母：U+1100-U+11FF
+    韩文兼容字母：U+3130-U+318F
+    韩文音节：U+AC00-U+D7AF
+    """
+    return re.search(r'[\u4e00-\u9fa5\u3041-\u30fc\uAC00-\uD7AF]', str)
 
 def split_by_language_boundary(text: str) -> list[str]:
     """
@@ -33,7 +49,7 @@ def split_by_language_boundary(text: str) -> list[str]:
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![一-鿆：，])|[^\s丨|\-/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![\u4E00–\u9Fa5：，])|[^\s丨|\-/]+"
     
     return re.findall(pattern, text)
 
@@ -113,7 +129,7 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码"
+        NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码|破解版\b"
         if re.search(NOT_MOVIETV_PATTERN, processed_name, flags=re.I):
             return
         
@@ -132,13 +148,13 @@ class TorSubtitle:
         # 分段后包含以下pattern，整段删
         SEG_REJECT_PATTERN_CN = [
             r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清", r"CHC高清\w+",
-            r"点播\b", r"\w+字幕", "简繁", 
+            r"点播\b", r"\w+字幕", r"简繁(\w+)?", 
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
-            r"\b(\w语|\w国|南韩|印度|瑞士|瑞典|挪威|大陆|香港|港台|加拿大|爱尔兰|墨西哥|西班牙)\b", 
+            r"\b(\w语|\w国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|正片|完结|无损)\b", 
-            r"\b(杜比视界|中\w双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
-            r"(原盘|连载|赛季|剧场版)\b", r"\b(原盘)"
+            r"\b(杜比视界|\w{2}双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
+            r"(原盘|连载|赛季|剧场版)\b", r"\b(原盘|应求)"
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
