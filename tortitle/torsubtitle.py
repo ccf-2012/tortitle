@@ -119,6 +119,7 @@ class TorSubtitle:
         """通过删除不需要的关键字来清理提取的标题。"""
         POST_CUT_PATTERN_LIST = [
             r"\b(\w{1,3}剧|[日国]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
+            # r"剧场版",
         ]
         clean_pattern = re.compile("|".join(POST_CUT_PATTERN_LIST), re.IGNORECASE)
         part_title = clean_pattern.sub("", part_title)
@@ -153,8 +154,8 @@ class TorSubtitle:
             r"\b(\w语|\w国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|正片|完结|无损)\b", 
-            r"\b(杜比视界|\w{2}双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
-            r"(原盘|连载|赛季|剧场版)\b", r"\b(原盘|应求)"
+            r"\b(杜比视界|\w{2}双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY)", r"类[别型][:：]",
+            r"(原盘|连载|赛季)\b", r"\b(原盘|应求)"
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
