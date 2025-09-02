@@ -124,13 +124,13 @@ class TorSubtitle:
             return
 
         # 开头的一些明确pattern，带上分隔符一起删
-        processed_name = re.sub(r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|港剧:?\s*经典台|台湾\(区\)|\(新\))", "", processed_name)
-        processed_name = re.sub(r"^[\:：]", "",  processed_name)
+        CUT_PATTERN = r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|港剧:?\s*经典台|台湾\(区\)|\(新\)|^[\:：])"
+        processed_name = re.sub(CUT_PATTERN, "", processed_name)
         # 开头的官方国语中字
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
 
         # 分段后包含以下pattern，整段删
-        reject_pattern_cn = [
+        REJECT_PATTERN_CN = [
             r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清",
             r"点播\b", r"\w+字幕", "简繁", 
             r"\b(\w语|\w国|南韩|加拿大|爱尔兰)\b", r"\b(\w{1,2}[剧|劇])$",
@@ -138,12 +138,12 @@ class TorSubtitle:
             r"\b(杜比视界|中\w双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
             r"(原盘|连载|赛季|剧场版)\b",
         ]
-        reject_pattern_en = [
+        REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
         ]
-        reject_pattern_list = reject_pattern_cn + reject_pattern_en
+        reject_pattern_list = REJECT_PATTERN_CN + REJECT_PATTERN_EN
         reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
-        eng_pattern = re.compile("|".join(reject_pattern_en), re.IGNORECASE)
+        eng_pattern = re.compile("|".join(REJECT_PATTERN_EN), re.IGNORECASE)
 
         # 【】方括号内有特征词，则整个方括号不要了
         bracket_blocks = re.findall(r'【[^】]*】', processed_name)
