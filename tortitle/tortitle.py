@@ -15,7 +15,7 @@ def cut_ext(torrent_name):
         return torrent_name
 
 def delimer_to_space(input_string):
-    dilimers = ['[', ']', '.', '{', '}', '_', ',', '(', ')']
+    dilimers = ['[', ']', '.', '{', '}', '_', ',', '(', ')', '「', '」']
     for dchar in dilimers:
         input_string = input_string.replace(dchar, ' ')
     return input_string
@@ -132,8 +132,8 @@ class TorTitle:
         
     def _prepare_title(self):
         self.title = cut_ext(self.title)
-        self.title = re.sub(r'^【.*】', '', self.title, flags=re.I)
-        self.title = re.sub(r'^\w+TV\b', '', self.title, flags=re.I)
+        self.title = re.sub(r'^[「【][^】」]*[】」]', '', self.title, flags=re.I)
+        self.title = re.sub(r'^\w+TV(\d+)?\b', '', self.title, flags=re.I)
         # if re.search(r"\d+x\d+", self.title, flags=re.I):
         #     self.title = re.sub(r'^\d{4}[\s\.]', '', self.title, flags=re.I)
         self.title = delimer_to_space(self.title)
@@ -307,3 +307,4 @@ class TorTitle:
 
 def parse_tor_name(name):
     return TorTitle(name)
+

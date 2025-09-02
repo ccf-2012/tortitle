@@ -503,6 +503,13 @@ TEST_CASES = [
             "title": "Formula 1 Heineken Dutch Grand Prix",
             "year": "2025"
         }
+    ),
+    (
+        "「 Resolution: Native 4K 」Interstellar 2014 IMAX 2160p BluRay x265 10bit TrueHD5.1-WiKi 星际穿越/ 星际启示录(港)/ 星际效应(台)/「马修·麦康纳 安妮·海瑟薇」*克里斯托弗·诺兰导演作品 *国英双语 *官译简繁英",
+        {
+            "title": "Interstellar",
+            "year": '2014'
+        }
     )
 ]
 
