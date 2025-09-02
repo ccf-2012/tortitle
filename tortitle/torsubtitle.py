@@ -38,11 +38,11 @@ def split_by_language_boundary(text: str) -> list[str]:
     return re.findall(pattern, text)
 
 def split_by_isolate_space(text):
-    """按非冒号、连字符或逗号前的空格分割字符串。"""
+    """依空格分段，要求空格前非冒号、连字符或逗号。"""
     return re.split(r'(?<![:\-,])[\s]', text)
 
 def contains_eng_word(str):
-    """检查字符串是否包含至少两个字母的英文单词。"""
+    """检查字符串是否包含至少两个字母的英文单词, 且单词前不紧邻中字。"""
     return re.search(r'(?<![一-鿆：，])[a-zA-Z]{2,}\b', str)
 
 class TorSubtitle:
@@ -114,7 +114,7 @@ class TorSubtitle:
         processed_name = name.strip()
 
         # 包含这些的，直接跳过
-        NOT_MOVIETV_PATTERN = r"0day破解|\bFLAC\b|\b无损\b|MQA编码"
+        NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码"
         if re.search(NOT_MOVIETV_PATTERN, processed_name, flags=re.I):
             return
         

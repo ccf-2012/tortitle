@@ -489,6 +489,20 @@ TEST_CASES = [
             "title": "National Memory",
             "year": "2018"
         }
+    ),
+    (
+        "CCTV6 The Hobbit An Unexpected Journey 2012 HDTV 1080i H264-HDSTV",
+        {
+            "title": "The Hobbit An Unexpected Journey",
+            "year": "2012"
+        }
+    ),
+    (
+        "GDTV3 Formula 1 Heineken Dutch Grand Prix 2025 1080i HDTV H264 MP2-HDHTV",
+        {
+            "title": "Formula 1 Heineken Dutch Grand Prix",
+            "year": "2025"
+        }
     )
 ]
 
