@@ -133,6 +133,7 @@ class TorSubtitle:
         REJECT_PATTERN_CN = [
             r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清",
             r"点播\b", r"\w+字幕", "简繁", 
+            r"\u2700-\u27BF]", # Unicode Block “Dingbats”
             r"\b(\w语|\w国|南韩|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|完结|无损)\b", 
@@ -175,8 +176,8 @@ class TorSubtitle:
                 if contains_eng_word(segment):
                     sub_parts = split_by_language_boundary(segment)
                 else:
-                    # sub_parts = re.split(r'(?<![:\-])[\s]', segment)
-                    sub_parts = re.split(r" ", segment)
+                    sub_parts = re.split(r'(?<![:\-,])[\s]', segment)
+                    # sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     if reject_pattern.search(spart):
