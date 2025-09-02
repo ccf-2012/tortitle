@@ -131,13 +131,13 @@ class TorSubtitle:
 
         # 分段后包含以下pattern，整段删
         REJECT_PATTERN_CN = [
-            r"^(?:(\w+TV|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清",
+            r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清",
             r"点播\b", r"\w+字幕", "简繁", 
             r"\b(\w语|\w国|南韩|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇])$",
             r"\b(热门|其他|完结|无损)\b", 
             r"\b(杜比视界|中\w双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY|剧场版)", r"类[别型][:：]",
-            r"(原盘|连载|赛季|剧场版)\b",
+            r"(原盘|连载|赛季|剧场版)\b", r"\b(原盘)"
         ]
         REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
@@ -147,7 +147,7 @@ class TorSubtitle:
         eng_pattern = re.compile("|".join(REJECT_PATTERN_EN), re.IGNORECASE)
 
         # 【】方括号内有特征词，则整个方括号不要了
-        bracket_blocks = re.findall(r'【[^】]*】', processed_name)
+        bracket_blocks = re.findall(r'[「【][^】」]*[】」]', processed_name)
         for block in bracket_blocks:
             if not re.search(r"[丨|]", block) and reject_pattern.search(block):
                 processed_name = processed_name.replace(block, "", 1)

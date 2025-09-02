@@ -270,7 +270,7 @@ class TorTitle:
     def _polish_title(self):
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
-            r'^\w+TV\b', r'^Jade\b', '^TVBClassic' r'CCTV\s*\d+(HD|\+)?',  r'Top\s*\d+',
+            r'^\w+TV(\d+)?\b', r'^Jade\b', '^TVBClassic' r'CCTV\s*\d+(HD|\+)?',  r'Top\s*\d+',
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED', 

@@ -482,6 +482,13 @@ TEST_CASES = [
         {
             "title": "Anpan"
         }
+    ),
+    (
+        "CCTV4.National.Memory.2018.HDTV.Subbed.MiniSD-TLF",
+        {
+            "title": "National Memory",
+            "year": "2018"
+        }
     )
 ]
 
