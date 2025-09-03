@@ -117,7 +117,7 @@ class TorSubtitle:
                 self.episode = f"E{episode_str.zfill(2)}"
 
     def _parse_tags(self):
-        if re.search(r"中字|[简繁多][\w|]*字幕", self.raw_name):
+        if re.search(r"中字|[中简繁多][\w|]*字幕", self.raw_name):
             self.tags.append("中字")
         if re.search(r"国[语語]|[中国粤]配", self.raw_name):
             self.tags.append("国语")
