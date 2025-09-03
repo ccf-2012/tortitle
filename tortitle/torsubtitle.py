@@ -236,6 +236,7 @@ class TorSubtitle:
             cut_pos = min(positions)
             process_name = self.raw_name[:cut_pos]
         self._parse_extitle(process_name)
+        self._parse_tags()
 
     def to_dict(self):
         return {
