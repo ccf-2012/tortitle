@@ -125,7 +125,7 @@ class TorSubtitle:
     def _part_clean(self, part_title: str) -> str:
         """通过删除不需要的关键字来清理提取的标题。"""
         POST_CUT_PATTERN_LIST = [
-            r"\b(\w{1,3}剧|[日国动]漫|澳大利亚剧|马来西亚剧|港綜)[\:：]",
+            r"\b(\w{1,3}剧|[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|港綜)[\:：]",
             # r"剧场版",
         ]
         clean_pattern = re.compile("|".join(POST_CUT_PATTERN_LIST), re.IGNORECASE)
@@ -159,10 +159,12 @@ class TorSubtitle:
             r"点播\b", r"\w+字幕", r"简繁(\w+)?", 
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
             r"\b(\w语|\w国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|新加坡|加拿大|爱尔兰|墨西哥|西班牙)\b", 
-            r"\b(\w{1,2}[剧|劇])$",
+            r"\b(\w{1,2}[剧|劇]|纪录片?)$",
             r"\b(热门|其他|正片|完结|无损)\b", 
-            r"\b(杜比视界|\w{2}双语|中字)", r"\b(专辑|综艺|动画|纪录|国创|DIY)", r"类[别型][:：]",
-            r"(原盘|连载|赛季)\b", r"\b(原盘|应求)"
+            r"\b(杜比视界|\w{2}双语|中字|原盘|应求)", 
+            r"\b(专辑|综艺|动画|国创|DIY)\b", 
+            r"类[别型][:：]",
+            r"(原盘|连载|赛季)\b", r"\b优惠剩余"
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
@@ -204,7 +206,7 @@ class TorSubtitle:
                     # sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
-                    if reject_pattern.search(spart):
+                    if reject_pattern.search(spart.strip()):
                         continue
                     if not contains_cjk(spart) or spart.endswith(":"):
                         # 全英文，以 : 结尾的，等待最后再考虑
