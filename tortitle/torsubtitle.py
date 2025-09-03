@@ -79,6 +79,7 @@ class TorSubtitle:
         self.episode = ""
         self.episode_pos = 0
         self.total_episodes = ""
+        self.tags = []
 
         self._parse()
 
@@ -114,6 +115,12 @@ class TorSubtitle:
                 self.episode = f"E{start}-E{end}"
             elif episode_str:
                 self.episode = f"E{episode_str.zfill(2)}"
+
+    def _parse_tags(self):
+        if re.search(r"中字", self.raw_name):
+            self.tags.append("中字")
+        if re.search(r"国[语語]|[中国粤]配", self.raw_name):
+            self.tags.append("国语")
 
     def _part_clean(self, part_title: str) -> str:
         """通过删除不需要的关键字来清理提取的标题。"""
