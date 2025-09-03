@@ -71,6 +71,7 @@ class TorTitle:
         # self.episode_int = None
         self._se_pos = 0
         self._year_pos = 0
+        self.failsafe_title = self.title
         self.parse()
 
     def parse(self):
@@ -133,7 +134,7 @@ class TorTitle:
     def _prepare_title(self):
         self.title = cut_ext(self.title)
         self.title = re.sub(r'^[「【][^】」]*[】」]', '', self.title, flags=re.I)
-        self.title = re.sub(r'^\w+TV(\d+)?\b', '', self.title, flags=re.I)
+        self.title = re.sub(r'^\w+TV(\d+)?(-4K)?\b', '', self.title, flags=re.I)
         # if re.search(r"\d+x\d+", self.title, flags=re.I):
         #     self.title = re.sub(r'^\d{4}[\s\.]', '', self.title, flags=re.I)
         self.title = delimer_to_space(self.title)
@@ -233,9 +234,8 @@ class TorTitle:
         self.title = self.title.strip()
     
     def _extract_titles(self):
-        failsafe = self.title
+        self.failsafe_title = self.title
         self._cut_s_year_season()
-        failsafe = self.title if len(self.title) > 0 else failsafe
         self._cut_s_keyword()
 
         if not self.cntitle:
@@ -256,8 +256,7 @@ class TorTitle:
                         self.cntitle = match.group()
 
         self.title = self.title.strip()
-        if not self.title:
-            self.title = failsafe
+
         return
 
     def _check_title(self):
@@ -270,7 +269,7 @@ class TorTitle:
     def _polish_title(self):
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
-            r'^\w+TV(\d+)?\b', r'^Jade\b', '^TVBClassic' r'CCTV\s*\d+(HD|\+)?',  r'Top\s*\d+',
+            r'^Jade\b', '^TVBClassic' r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED', 
@@ -284,6 +283,7 @@ class TorTitle:
         self.title = cut_aka(self.title)
         self.title = re.sub(r'\s+', ' ', self.title)
 
+        self.title = self.title if len(self.title) > 0 else self.failsafe_title
         if not self._check_title() and self.cntitle:
             self.title = self.cntitle
 

@@ -510,6 +510,12 @@ TEST_CASES = [
             "title": "Interstellar",
             "year": '2014'
         }
+    ),
+    (
+        "CCTV-4K Commemorating the 80th Anniversary of the Victory in the Chinese People's War of Resistance against Japanese Aggression and the World Anti-Fascist War 20250903 2160p 50fps UHDTV HEVC 10bit HLG DD5.1-QHstudIo",
+        {
+            "title": "Commemorating the 80th Anniversary of the Victory in the Chinese People's War of Resistance against Japanese Aggression and the World Anti Fascist War",
+        }
     )
 ]
 
