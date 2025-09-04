@@ -108,6 +108,8 @@ test_cases_for_title_parsing = [
     ("군함도 2017 1080p AAC 2 0 x264 - TW Version@JJL【韩国/南韩】军舰岛 | 国语中字", "군함도"), # \uad70\ud568\ub3c4
     ("福音战士新剧场版:Q *台版原盘中字ISO緊急招募 字幕時間軸調整 , 壓制 , 繁體OCR 和 繁體字幕校正,", "福音战士新剧场版:Q"),
     ("纪录片: 纪念抗战胜利80周年大会[优惠剩余时间：16时22分]", "纪念抗战胜利80周年大会"),
+    ("Days of our Lives - S61E008 [ 2025 ] [ MKV | H.264 | WEB-DL | 720p | FastTorrent | Subs ] [ Uploader: scipio ]", ""),
+
 ]   
 
 
