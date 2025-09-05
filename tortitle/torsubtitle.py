@@ -123,13 +123,6 @@ class TorSubtitle:
             self.tags.append("国语")
 
     def _part_clean(self, part_title: str) -> str:
-        """通过删除不需要的关键字来清理提取的标题。"""
-        POST_CUT_PATTERN_LIST = [
-            r"\b(\w{1,3}剧|[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|港綜)[\:：]",
-            # r"剧场版",
-        ]
-        clean_pattern = re.compile("|".join(POST_CUT_PATTERN_LIST), re.IGNORECASE)
-        part_title = clean_pattern.sub("", part_title)
         return part_title.strip()
 
     def _parse_extitle(self, name: str):
@@ -155,7 +148,7 @@ class TorSubtitle:
 
         # 分段后包含以下pattern，整段删
         SEG_REJECT_PATTERN_CN = [
-            r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+高清频道", r"\w+TV\w*高清", r"CHC高清\w+",
+            r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+频道", r"\w+TV\w*高清", r"CHC高清\w+",
             r"点播\b", r"\w+字幕", r"简繁(\w+)?", 
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
             r"\b(\w语|\w国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|新加坡|加拿大|爱尔兰|墨西哥|西班牙)\b", 
@@ -172,6 +165,12 @@ class TorSubtitle:
         reject_pattern_list = SEG_REJECT_PATTERN_CN + SEG_REJECT_PATTERN_EN
         reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
         eng_pattern = re.compile("|".join(SEG_REJECT_PATTERN_EN), re.IGNORECASE)
+
+        PART_CUT_PATTERN_LIST = [
+            r"\b(\w{1,3}剧|[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|韩综|港綜)[\:：]",
+            # r"剧场版",
+        ]
+        part_clean_pattern = re.compile("|".join(PART_CUT_PATTERN_LIST), re.IGNORECASE)
 
         # 【】「」方括号内有特征词，则整个方括号不要了
         bracket_blocks = re.findall(r'[「【][^】」]*[】」]', processed_name)
@@ -206,17 +205,14 @@ class TorSubtitle:
                     # sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
+                    spart = part_clean_pattern.sub("", spart)
                     if reject_pattern.search(spart.strip()):
                         continue
                     if not contains_cjk(spart) or spart.endswith(":"):
                         # 全英文，以 : 结尾的，等待最后再考虑
                         candidate_list.append(spart)
                         continue
-                    # 清理后还有内容的，作为标题
-                    spart = self._part_clean(spart)
-                    if not spart:
-                        continue
-                    self.extitle = spart
+                    self.extitle = spart.strip()
                     return
             else:
                 # 一段[丨|/]分隔的仅包括英文的，
