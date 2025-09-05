@@ -516,6 +516,12 @@ TEST_CASES = [
         {
             "title": "Commemorating the 80th Anniversary of the Victory in the Chinese People's War of Resistance against Japanese Aggression and the World Anti Fascist War",
         }
+    ),
+    (
+        "CCTV-8K CMG 2025 Spring Festival Gala 20250128 4320p 50fps UHDTV HEVC 10bit HLG MPEG-QHstudIo",
+        {
+            "title": "CMG 2025 Spring Festival Gala",
+        }
     )
 ]
 

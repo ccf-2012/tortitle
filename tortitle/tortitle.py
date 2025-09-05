@@ -7,7 +7,7 @@ def cut_ext(torrent_name):
         return ''
     tortup = os.path.splitext(torrent_name)
     torext = tortup[1].lower()
-    # if re.match(r'\.[0-9a-z]{2,5}$', tortup[1], flags=re.I):
+    # if re.match(r'\.[0-9a-z]{2,5}$', torext, flags=re.I):
     mvext = ['.strm', '.mkv', '.ts', '.m2ts', '.vob', '.mpg', '.mp4', '.3gp', '.mov', '.tp', '.zip', '.pdf', '.iso', '.ass', '.srt', '.7z', '.rar']
     if torext.lower() in mvext:
         return tortup[0].strip()
@@ -134,7 +134,7 @@ class TorTitle:
     def _prepare_title(self):
         self.title = cut_ext(self.title)
         self.title = re.sub(r'^[「【][^】」]*[】」]', '', self.title, flags=re.I)
-        self.title = re.sub(r'^\w+TV(\d+)?(-4K)?\b', '', self.title, flags=re.I)
+        self.title = re.sub(r'^\w+TV-?(\d+)?([48]K)?\b', '', self.title, flags=re.I)
         # if re.search(r"\d+x\d+", self.title, flags=re.I):
         #     self.title = re.sub(r'^\d{4}[\s\.]', '', self.title, flags=re.I)
         self.title = delimer_to_space(self.title)
