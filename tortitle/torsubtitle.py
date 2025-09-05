@@ -49,7 +49,7 @@ def split_by_language_boundary(text: str) -> list[str]:
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![\u4E00–\u9Fa5：，])|[^\s丨|\-/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![\u4E00–\u9Fa5：，！])|[^\s丨|\-/]+"
     
     return re.findall(pattern, text)
 
