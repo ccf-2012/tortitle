@@ -121,7 +121,7 @@ class TorSubtitle:
             self.tags.append("中字")
         if re.search(r"特字\b|特效字幕", self.raw_name):
             self.tags.append("特效")
-        if re.search(r"国[语語]|[中国粤]配", self.raw_name):
+        if re.search(r"国[语語]|[中国粤]配|普通话", self.raw_name):
             self.tags.append("国语")
 
     def _part_clean(self, part_title: str) -> str:
