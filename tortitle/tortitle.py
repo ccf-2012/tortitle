@@ -222,6 +222,7 @@ class TorTitle:
             r'(\bVarious Artists|\bMQA\b|整轨|\b分轨|\b分軌|\b无损|\bLPCD|\bSACD|\bMP3|XRCD\d{1,3})',
             r'(\b|_)(FLAC.{0,3}|DSF.{0,3}|DSD(\d{1,3})?)$',
             r'\bVolume.*[\(\[]\d+[\)\]]$',
+            r'\w+Music$',
         ]
         patterns_other = [
             r'(zip|7z|rar).?$',

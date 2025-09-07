@@ -572,6 +572,7 @@ NON_MEDIA_TEST_CASES = [
     ('Lucile Boulanger - Bach & Abel_ Solo [FLAC 192kHz-24bit]', 'music'),
     ("[Some.Movie].2024.1080p.WEB-DL.mkv", "movie"),
     ('Sonata Arctica - Acoustic Adventures  - Volume One (2022)', 'music'),
+    ('Mikhail Zemtsov, Hanna Shybayeva - Complete Works for Viola - Vol. 1 (2025) FLAC-CHDMusic', 'music'),
     # ('Sara K.-No Cover-Chesky-0196', 'music'),
 ]
 
