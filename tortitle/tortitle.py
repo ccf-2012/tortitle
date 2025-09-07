@@ -60,6 +60,8 @@ class TorTitle:
         self.type = 'movie'
         self.season = ''
         self.episode = ''
+        self.seasons = []
+        self.episodes = []
         self.sub_episode = ''
         self.media_source = ''
         self.group = ''
@@ -67,8 +69,6 @@ class TorTitle:
         self.video = '' 
         self.audio = ''
         self.full_season = False
-        # self.season_int = None
-        # self.episode_int = None
         self._se_pos = 0
         self._year_pos = 0
         self.failsafe_title = self.title
@@ -172,15 +172,15 @@ class TorTitle:
 
     def _extract_type(self):
         patterns = {
-            's_e': r'\b(S\d+)(E\d+(-Ep?\d+)?)\b',
-            'season_only': r'(?<![a-zA-Z])(S\d+([\-\+]S?\d+)?)\b(?!.*\bS\d+)',
+            's_e': r'\b(S(\d+))(E(\d+)(-Ep?(\d+))?)\b',
+            'season_only': r'(?<![a-zA-Z])(S(\d+)([\-\+]S?(\d+))?)\b(?!.*\bS\d+)',
             'season_word': r'\bSeason (\d+)\b',
-            'ep_only': r'\bEp?(\d+)(-Ep?\d+)?\b',
+            'ep_only': r'\bEp?(\d+)(-E?p?(\d+))?\b',
             'cn_season': r'第([一二三四五六七八九十]|\d+)季',
             'cn_episode': r'第([一二三四五六七八九十]+|\d+)集',
-            'full_season': r'[全第]\w{,4}\s*[集季]'
+            'full_season': r'[全]\w{,4}\s*[集季]'
         }
-        # TODO: find better way
+
         for key, pattern in patterns.items():
             match = re.search(pattern, self.raw_name, flags=re.IGNORECASE)
             if match:
@@ -197,16 +197,32 @@ class TorTitle:
                     # self.season_int = int(match.group(1))
                     # self.episode_int = int(match.group(2))
                     self.season = match.group(1)
-                    self.episode = match.group(2)
+                    self.episode = match.group(3)
+                    self.seasons = [int(match.group(2))]
+                    if match.group(6):
+                        self.episodes = list(range(int(match.group(4)), int(match.group(6))+1))
+                    else:
+                        self.episodes = [int(match.group(4))]
                 elif key == 'season_only':
                     # self.season_int = tryint(match.group(1))
                     self.season = match.group(0)
+                    if match.group(4):
+                        self.seasons = list(range(int(match.group(2)), int(match.group(4))+1))
+                    else:
+                        self.seasons = [int(match.group(2))]
                 elif key in ['season_word', 'cn_season']:
                     # self.season_int = tryint(match.group(1))
                     season_int = tryint(match.group(1))
+                    self.seasons = [season_int]
                     self.season = 'S'+ str(season_int).zfill(2) if season_int else ''
                 elif key in ['cn_episode', 'ep_only']:
                     self.season = 'S01'
+                    self.seasons = [1]
+                    if match.group(3):
+                        self.episodes = list(range(tryint(match.group(1)), tryint(match.group(3))+1))
+                    else:
+                        self.episodes = [tryint(match.group(1))]
+
                     self.episode = match.group()
                 elif key == 'full_season':
                     self.full_season = True
@@ -298,6 +314,8 @@ class TorTitle:
             'type': self.type,
             'season': self.season,
             'episode': self.episode,
+            'seasons': self.seasons,
+            'episodes': self.episodes,
             'media_source': self.media_source,
             'group': self.group,
             'resolution': self.resolution,

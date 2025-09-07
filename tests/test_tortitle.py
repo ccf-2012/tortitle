@@ -23,6 +23,8 @@ TEST_CASES = [
             "type": "tv",
             "season": "S01",
             "episode": "E01",
+            "seasons": [1],
+            "episodes": [1],
             "resolution": "720p",
             "media_source": "encode",
             "group": "GROUP",
@@ -44,13 +46,15 @@ TEST_CASES = [
         },
     ),
     (
-        "[The.Mandalorian].S01E01.(2019).1080p.WEB-DL-GROUP",
+        "[The.Mandalorian].S01E01-E05.(2019).1080p.WEB-DL-GROUP",
         {
             "title": "The Mandalorian",
             "year": "2019",
             "type": "tv",
             "season": "S01",
-            "episode": "E01",
+            "episode": "E01-E05",
+            "seasons": [1],
+            "episodes": [1,2,3,4,5],
         },
     ),
     (
@@ -70,6 +74,7 @@ TEST_CASES = [
             "year": "2025",
             "type": "tv",
             "season": "S01",
+            "seasons": [1],
             "episode": "",
             "resolution": "1080p",
             "media_source": "webdl",
@@ -78,7 +83,11 @@ TEST_CASES = [
     ),
     (
         "[TV][jsum@U2][我独自升级 第二季 -起于暗影-][Ore dake Level Up na Ken Season 2: Arise from the Shadow][1080p][TV 01-13(13-25) Fin+SP][MKV/BDRip][2025年01月]",
-        {"title": "Ore dake Level Up na Ken", "type": "tv"},
+        {
+            "title": "Ore dake Level Up na Ken", 
+            "type": "tv",
+            "seasons": [2]
+        },
     ),
     (
         "[The.Movie.2023][1080p][BluRay]",
@@ -90,14 +99,16 @@ TEST_CASES = [
         },
     ),
     (
-        "[美剧][古战场传奇 第八季][Outlander.Blood.of.My.Blood.S01E03.School.of.the.Moon.2160p.STAN.WEB-DL.DDP5.1.HDR.H.265-NTb]",
+        "[美剧][古战场传奇 第八季][Outlander.Blood.of.My.Blood.S08E03.School.of.the.Moon.2160p.STAN.WEB-DL.DDP5.1.HDR.H.265-NTb]",
         {
             "title": "Outlander Blood of My Blood",
             "cntitle": "古战场传奇",
             "year": "",
             "type": "tv",
-            "season": "S01",
+            "season": "S08",
+            "seasons": [8],
             "episode": "E03",
+            "episodes": [3],
             "resolution": "2160p",
             "media_source": "webdl",
             "group": "NTb",
@@ -159,14 +170,15 @@ TEST_CASES = [
     ),
     # TV Show with Chinese Title
     (
-        "[曼达洛人].The.Mandalorian.S01E01.2019.1080p.WEB-DL.DDP5.1.H264-NTb",
+        "[曼达洛人].The.Mandalorian.E01-05.2019.1080p.WEB-DL.DDP5.1.H264-NTb",
         {
             "title": "The Mandalorian",
             "cntitle": "曼达洛人",
             "year": "2019",
             "type": "tv",
             "season": "S01",
-            "episode": "E01",
+            "episode": "E01-05",
+            "episodes": [1,2,3,4,5]
         },
     ),
     # TV Show with Season only
@@ -283,7 +295,9 @@ TEST_CASES = [
             "year": "",
             "type": "tv",
             "season": "S03",
+            "seasons": [3],
             "episode": "E02",
+            "episodes": [2]
         },
     ),
     (
@@ -292,9 +306,6 @@ TEST_CASES = [
             "title": "Moero Attack",
             "cntitle": "排球女将",
             "year": "1979",
-            "type": "movie",
-            "season": "",
-            "episode": "",
         },
     ),
     (
@@ -441,7 +452,8 @@ TEST_CASES = [
             "title": "The Rise of Wanshan",
             "cntitle": "沸腾的群山",
             "type": "tv",
-            "episode": "E18-E19"
+            "episode": "E18-E19",
+            "episodes": [18, 19]
         }
         
     ),
@@ -451,6 +463,7 @@ TEST_CASES = [
             "title": "Journey To Guangdong From East To North",
             "type": "tv",
             "episode": "EP03",
+            "episodes": [3]
         }
     ),
     (
@@ -460,7 +473,9 @@ TEST_CASES = [
             "cntitle": "爱尔兰之血",
             "type": "tv",
             "season": "S01",
+            "seasons": [1],
             "episode": "E04",
+            "episodes": [4]
         }
     ),
     (
