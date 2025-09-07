@@ -549,3 +549,34 @@ def test_title_parsing(input_string, expected_dict):
         assert (
             getattr(tor_title, key) == value
         ), f"Failed on key '{key}' for input '{input_string}'"
+
+NON_MEDIA_TEST_CASES = [
+    ("MyBook.epub", "ebook"),
+    ("Another.Book.2023.pdf", "ebook"),
+    ("[精装版]Some.Book.mobi", "ebook"),
+    ("Some.Course.课件.zip", "ebook"),
+    ("Artist - Album [FLAC] [24Bit-48kHz]", "music"),
+    ("Some.Album.1999.CD.FLAC.cue", "music"),
+    ("VA-Greatest.Hits.2024.MP3-GROUP", "music"),
+    ("Artist - Album (2023) [SACD]", "music"),
+    ("My.Archive.2023.rar", "other"),
+    ("Another.File.zip", "other"),
+    ("Backup.7z", "other"),
+    ('Michael Jackson - The Mystery Of HIStory (1997) [FLAC]', 'music'),
+    ('VA-Kill_Bill_Vol_2-(9362-48676-2)-CD-FLAC-2004', 'music'),
+    ('Commodores - Caught In The Act (1975) [FLAC] {24-192 HDTracks}', 'music'),
+    ('Aimer - DAWN (2015) {24bit, WEB} [FLAC]', 'music'),
+    ("The.Matrix.1999.1080p.BluRay.x264-GROUP", "movie"),
+    ('Dana Zemtsov & Anna Fedorova - Silhouettes 2020 DSF', 'music'),
+    ('2002 - In Violet Light - \'15 Hi-Res @ 24~96 (flac)', 'music'),
+    ('Lucile Boulanger - Bach & Abel_ Solo [FLAC 192kHz-24bit]', 'music'),
+    ("[Some.Movie].2024.1080p.WEB-DL.mkv", "movie"),
+    ('Sonata Arctica - Acoustic Adventures  - Volume One (2022)', 'music'),
+    # ('Sara K.-No Cover-Chesky-0196', 'music'),
+]
+
+@pytest.mark.parametrize("input_string, expected_type", NON_MEDIA_TEST_CASES)
+def test_non_media_type(input_string, expected_type):
+    """Tests that non-media types are correctly identified."""
+    tor_title = TorTitle(input_string)
+    assert tor_title.type == expected_type, f"Failed on input '{input_string}'"

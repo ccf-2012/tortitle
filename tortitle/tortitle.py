@@ -77,13 +77,21 @@ class TorTitle:
         """
         The main parsing logic to extract information from the torrent name.
         """
-        self.raw_name = self.title
-        self.title, self.cntitle = self._handle_bracket_title(self.title)
+        self.raw_name = self.title.strip()
 
-        self.media_source, self.video, self.audio = self._parse_media_info(self.raw_name)
         self.resolution = self._parse_resolution(self.raw_name)
+        if not self.resolution:
+            self.type, match = self._check_non_media_type(self.raw_name)
+            if match:
+                return
+        self.media_source, self.video, self.audio = self._parse_media_info(self.raw_name)
+        # if not (self.resolution or self.media_source):
+        #     self.type = 'other'
+        #     return 
+        self.type = 'movie'
         self.type = self._check_tv_type(delimer_to_space(self.raw_name))
 
+        self.title, self.cntitle = self._handle_bracket_title(self.title)
         self.title = self._prepare_title(self.title)
 
         self.group = self._parse_group(self.title) or ''
@@ -202,6 +210,35 @@ class TorTitle:
             if match:
                 return key, match
         return None, None
+
+    def _check_non_media_type(self, processing_title: str) -> str:
+        """Checks if the title is a music or others."""
+        patterns_ebook = [
+            r'(pdf|epub|mobi|txt|chm|azw3|eBook-\w{4,8}|mobi|doc|docx).?$',
+            r'(上下册|全.{1,4}册|精装版|修订版|第\d版|共\d本|文集|新修版|PDF版|课本|课件|出版社)',
+        ]
+        patterns_music = [
+            r'(\b\d+ ?CD|(\[|\()\s*(16|24)\b|\-(44\.1|88.2|48|192)|24Bit|44\s*\]|FLAC.*(16|24|48|CUE|WEB|Album)|WAV.*CUE|CD.*FLAC|(\[|\()\s*FLAC)', 
+            r'(\bVarious Artists|\bMQA\b|整轨|\b分轨|\b分軌|\b无损|\bLPCD|\bSACD|\bMP3|XRCD\d{1,3})',
+            r'(\b|_)(FLAC.{0,3}|DSF.{0,3}|DSD(\d{1,3})?)$',
+            r'\bVolume.*[\(\[]\d+[\)\]]$',
+        ]
+        patterns_other = [
+            r'(zip|7z|rar).?$',
+        ]
+        for pattern in patterns_ebook:
+            match = re.search(pattern, processing_title, flags=re.IGNORECASE)
+            if match:
+                return 'ebook', match
+        for pattern in patterns_music:
+            match = re.search(pattern, processing_title, flags=re.IGNORECASE)
+            if match:
+                return 'music', match
+        for pattern in patterns_other:
+            match = re.search(pattern, processing_title, flags=re.IGNORECASE)
+            if match:
+                return 'other', match
+        return 'unknow', None
 
     def _check_tv_type(self, processing_title: str) -> str:
         """Checks if the title is a TV show."""
