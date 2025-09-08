@@ -80,16 +80,13 @@ class TorTitle:
         self.raw_name = self.title.strip()
 
         self.resolution = self._parse_resolution(self.raw_name)
-        if not self.resolution:
+        self.media_source, self.video, self.audio = self._parse_media_info(self.raw_name)
+        if not self.resolution and not self.video:
             self.type, match = self._check_non_media_type(self.raw_name)
             if match:
                 return
-        self.media_source, self.video, self.audio = self._parse_media_info(self.raw_name)
-        # if not (self.resolution or self.media_source):
-        #     self.type = 'other'
-        #     return 
-        self.type = 'movie'
-        self.type = self._check_tv_type(delimer_to_space(self.raw_name))
+
+        self.type = self._check_movie_tv_type(delimer_to_space(self.raw_name))
 
         self.title, self.cntitle = self._handle_bracket_title(self.title)
         self.title = self._prepare_title(self.title)
@@ -222,7 +219,11 @@ class TorTitle:
             r'(\bVarious Artists|\bMQA\b|整轨|\b分轨|\b分軌|\b无损|\bLPCD|\bSACD|\bMP3|XRCD\d{1,3})',
             r'(\b|_)(FLAC.{0,3}|DSF.{0,3}|DSD(\d{1,3})?)$',
             r'\bVolume.*[\(\[]\d+[\)\]]$',
-            r'\w+Music$',
+            r'\w+Music$', r'HDSCD$', r'Hi-?Res'
+        ]
+        pattern_game = [
+            r'\b(PC|PS4|PS5|Switch|WiiU|XBOXONE|XBOX360|XBOXSeriesX|PSVita|PS3|PS2|PSP|3DS|DS)\b',
+            r'\b(\w*Game|GOG|DINOByTES|RAZOR|TiNYiSO|RUNE|VACE|P2P|5play|\w*Know|KaOs|TENOKE|FitGirl)$'
         ]
         patterns_other = [
             r'(zip|7z|rar).?$',
@@ -235,13 +236,17 @@ class TorTitle:
             match = re.search(pattern, processing_title, flags=re.IGNORECASE)
             if match:
                 return 'music', match
+        for pattern in pattern_game:
+            match = re.search(pattern, processing_title, flags=re.IGNORECASE)
+            if match:
+                return 'game', match
         for pattern in patterns_other:
             match = re.search(pattern, processing_title, flags=re.IGNORECASE)
             if match:
                 return 'other', match
-        return 'unknow', None
+        return '', None
 
-    def _check_tv_type(self, processing_title: str) -> str:
+    def _check_movie_tv_type(self, processing_title: str) -> str:
         """Checks if the title is a TV show."""
         key, match = self._match_season(processing_title)
         if match:
@@ -328,9 +333,9 @@ class TorTitle:
 
         return processing_title.strip(), cn_title
 
-    def _has_english_chars(self) -> bool:
+    def _has_english_chars(self, str) -> bool:
         """Checks if the title contains English characters."""
-        return bool(re.search('[a-zA-Z]', self.title))
+        return bool(re.search('[a-zA-Z]', str))
 
     def _polish_title(self) -> None:
         """Polishes the final title by removing noise."""
@@ -350,9 +355,10 @@ class TorTitle:
         self.title = cut_aka(self.title)
         self.title = re.sub(r'\s+', ' ', self.title)
 
-        self.title = self.title if len(self.title) > 0 else self.failsafe_title
-        if not self._has_english_chars() and self.cntitle:
-            self.title = self.cntitle
+        if len(self.title) < 1: 
+            self.title = self.failsafe_title
+            if not self._has_english_chars(self.title) and self.cntitle:
+                self.title = self.cntitle
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the parsed data as a dictionary."""

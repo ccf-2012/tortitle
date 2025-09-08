@@ -573,6 +573,9 @@ NON_MEDIA_TEST_CASES = [
     ("[Some.Movie].2024.1080p.WEB-DL.mkv", "movie"),
     ('Sonata Arctica - Acoustic Adventures  - Volume One (2022)', 'music'),
     ('Mikhail Zemtsov, Hanna Shybayeva - Complete Works for Viola - Vol. 1 (2025) FLAC-CHDMusic', 'music'),
+    ('Dog Trumpet - Shadowland - 2022 - FLAC分轨', 'music'),
+    ('刘德华 - 暖暖柔情粤语精选 1992 WAV分轨 cjm4495@HDSCD', 'music'),
+    ('Paul Weller - Modern Classics - The Greatest Hits 1998 - FLAC 分轨 - nbarock', 'music'),
     # ('Sara K.-No Cover-Chesky-0196', 'music'),
 ]
 
