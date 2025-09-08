@@ -80,8 +80,8 @@ class TorSubtitle:
         self.episode_pos = 0
         self.total_episodes = ""
         self.tags = []
-
         self._parse()
+        self.istv = self.season or self.episode or self.total_episodes
 
     def _parse_season(self, name: str):
         # “第三季”、“Season 4”的模式
