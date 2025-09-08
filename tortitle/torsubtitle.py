@@ -226,7 +226,6 @@ class TorSubtitle:
             self.extitle = candidate_list[0].strip()
         return 
 
-
     def _parse(self):
         self._parse_season(self.raw_name)
         self._parse_episode(self.raw_name)
