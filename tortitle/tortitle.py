@@ -219,7 +219,11 @@ class TorTitle:
             r'(\bVarious Artists|\bMQA\b|整轨|\b分轨|\b分軌|\b无损|\bLPCD|\bSACD|\bMP3|XRCD\d{1,3})',
             r'(\b|_)(FLAC.{0,3}|DSF.{0,3}|DSD(\d{1,3})?)$',
             r'\bVolume.*[\(\[]\d+[\)\]]$',
-            r'\w+Music$',
+            r'\w+Music$', r'HDSCD$', r'Hi-?Res'
+        ]
+        pattern_game = [
+            r'\b(PC|PS4|PS5|Switch|WiiU|XBOXONE|XBOX360|XBOXSeriesX|PSVita|PS3|PS2|PSP|3DS|DS)\b',
+            r'\b(\w*Game|GOG|DINOByTES|RAZOR|TiNYiSO|RUNE|VACE|P2P|5play|\w*Know|KaOs|TENOKE|FitGirl)$'
         ]
         patterns_other = [
             r'(zip|7z|rar).?$',
@@ -232,11 +236,15 @@ class TorTitle:
             match = re.search(pattern, processing_title, flags=re.IGNORECASE)
             if match:
                 return 'music', match
+        for pattern in pattern_game:
+            match = re.search(pattern, processing_title, flags=re.IGNORECASE)
+            if match:
+                return 'game', match
         for pattern in patterns_other:
             match = re.search(pattern, processing_title, flags=re.IGNORECASE)
             if match:
                 return 'other', match
-        return 'unknow', None
+        return '', None
 
     def _check_movie_tv_type(self, processing_title: str) -> str:
         """Checks if the title is a TV show."""
