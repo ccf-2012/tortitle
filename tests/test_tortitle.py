@@ -537,6 +537,12 @@ TEST_CASES = [
         {
             "title": "CMG 2025 Spring Festival Gala",
         }
+    ),
+    (
+        "生化危机123合集 2002-2007",
+        {
+            "title": "生化危机123合集",
+        }
     )
 ]
 

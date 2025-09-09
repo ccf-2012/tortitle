@@ -182,7 +182,7 @@ class TorTitle:
         """Extracts the year from the title."""
         _year_pos = 0
         year = ""
-        potential_years = re.findall(r'(19\d{2}|20\d{2})(?:\d{4})?\b', processing_title)
+        potential_years = re.findall(r'(?<!\d{4}-)(19\d{2}|20\d{2})(?:\d{4})?\b', processing_title)
         if potential_years:
             year = potential_years[-1]
             _year_pos = processing_title.rfind(year)
