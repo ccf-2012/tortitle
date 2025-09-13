@@ -117,7 +117,7 @@ class TorSubtitle:
                 self.episode = f"E{episode_str.zfill(2)}"
 
     def _parse_tags(self):
-        if re.search(r"中字|[中简繁多][\w\||\\]*字幕|官译", self.raw_name):
+        if re.search(r"中字|\b简繁|[中简繁多][\w\||\\]*字幕|官译", self.raw_name):
             self.tags.append("中字")
         if re.search(r"特字\b|特效字幕", self.raw_name):
             self.tags.append("特效")
@@ -169,7 +169,7 @@ class TorSubtitle:
         eng_pattern = re.compile("|".join(SEG_REJECT_PATTERN_EN), re.IGNORECASE)
 
         PART_CUT_PATTERN_LIST = [
-            r"\b(\w{1,3}剧|[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|\w+剧集|韩综|港綜)[\:：]",
+            r"\b(\w{1,3}剧|\w*[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|\w+剧集|韩综|港綜)[\:：]",
             # r"剧场版",
         ]
         part_clean_pattern = re.compile("|".join(PART_CUT_PATTERN_LIST), re.IGNORECASE)
