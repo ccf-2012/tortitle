@@ -126,6 +126,7 @@ TEST_CASES = [
             "year": "2023",
             "type": "tv",
             "season": "S01",
+            "full_season": True,
             "episode": "",
             "resolution": "1080p",
             "media_source": "webdl",
@@ -261,6 +262,7 @@ TEST_CASES = [
             "cntitle": "",
             "year": "",
             "type": "tv",
+            "full_season": True,
             "season": "S01",
             "episode": "",
         },
@@ -306,6 +308,8 @@ TEST_CASES = [
             "title": "Moero Attack",
             "cntitle": "排球女将",
             "year": "1979",
+            "type": "tv",
+            "full_season": True
         },
     ),
     (
@@ -542,6 +546,22 @@ TEST_CASES = [
         "生化危机123合集 2002-2007",
         {
             "title": "生化危机123合集",
+        }
+    ),
+    (
+        "Tale.of.Tales.AKA.Il.racconto.dei.racconti.2015.1080p.USA.Blu-ray.AVC.DTS-HD.MA.5.1-CONSORTiUM",
+        {
+            "title": "Tale of Tales",
+            "media_source": "bluray",
+        }
+    ),
+    (
+        "The.Coordinate.2025.S01.Complete.2160p.WEB-DL.HEVC.AAC-QHstudIo",
+        {
+            "title": "The Coordinate",
+            "media_source": "webdl",
+            "type": "tv",
+            "full_season": True
         }
     )
 ]

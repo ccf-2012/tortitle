@@ -86,12 +86,12 @@ class TorTitle:
             if match:
                 return
 
-        self.type = self._check_movie_tv_type(delimer_to_space(self.raw_name))
+        self._check_movie_tv_type(delimer_to_space(self.raw_name))
 
         self.title, self.cntitle = self._handle_bracket_title(self.title)
         self.title = self._prepare_title(self.title)
 
-        self.group = self._parse_group(self.title) or ''
+        self.group = self._parse_group(self.title)
         year_pos, self.year = self._extract_year(self.title)
         se_pos = self._extract_season_episode(self.title)
         self.failsafe_title = self.title
@@ -138,9 +138,7 @@ class TorTitle:
         """Parses the release group from the torrent name."""
         sstr = cut_ext(torrent_name)
         match = re.search(r'[@\-￡]\s?(\w+)(?!.*[@\-￡].*)$', sstr, re.I)
-        if match:
-            return match.group(1).strip()
-        return None
+        return match.group(1).strip() if match else ''
 
     def _prepare_title(self, processing_title: str) -> str:
         """Prepares the title for further parsing."""
@@ -188,25 +186,74 @@ class TorTitle:
             _year_pos = processing_title.rfind(year)
         return _year_pos, year
 
+    patterns = {
+        's_e': r'\b(S(\d+))(E(\d+)(-Ep?(\d+))?)\b',
+        'season_only': r'(?<![a-zA-Z])(S(\d+)([\-\+]S?(\d+))?)\b(?!.*\bS\d+)',
+        'season_word': r'\bSeason (\d+)\b',
+        'ep_only': r'\bEp?(\d+)(-E?p?(\d+))?\b',
+        'cn_season': r'第([一二三四五六七八九十]|\d+)季',
+        'cn_episode': r'第([一二三四五六七八九十]+|\d+)集',
+        'full_season': r'[全]\w{,4}\s*[集季]|\d+\s*集全|\d{4}\s*(S\d+\s*)?complete'
+    }
     def _match_season(self, processing_title: str, match_key: Optional[str] = None) -> Any:
         """Matches season and episode patterns."""
-        patterns = {
-            's_e': r'\b(S(\d+))(E(\d+)(-Ep?(\d+))?)\b',
-            'season_only': r'(?<![a-zA-Z])(S(\d+)([\-\+]S?(\d+))?)\b(?!.*\bS\d+)',
-            'season_word': r'\bSeason (\d+)\b',
-            'ep_only': r'\bEp?(\d+)(-E?p?(\d+))?\b',
-            'cn_season': r'第([一二三四五六七八九十]|\d+)季',
-            'cn_episode': r'第([一二三四五六七八九十]+|\d+)集',
-            'full_season': r'[全]\w{,4}\s*[集季]'
-        }
         if match_key:
-            return re.search(patterns[match_key], processing_title)
+            return re.search(self.patterns[match_key], processing_title)
         
-        for key, pattern in patterns.items():
+        for key, pattern in self.patterns.items():
             match = re.search(pattern, processing_title, flags=re.IGNORECASE)
             if match:
                 return key, match
         return None, None
+
+    def _check_movie_tv_type(self, processing_title: str) -> str:
+        """Checks if the title is a TV show."""
+        key, match = self._match_season(processing_title)
+        self.type = 'tv' if match else 'movie'
+        if self.type == 'tv':
+            if re.search(r'complete', processing_title[match.span(0)[1]:], flags=re.I):
+                self.full_season = True
+        return self.type
+
+    def _extract_season_episode(self, processing_title: str) -> int:
+        """Extracts season and episode numbers."""
+        se_pos = 0
+        key, match = self._match_season(processing_title)
+        if match:
+            if key in ['s_e']:
+                self.season = match.group(1)
+                self.episode = match.group(3)
+                self.seasons = [int(match.group(2))]
+                if match.group(6):
+                    self.episodes = list(range(int(match.group(4)), int(match.group(6)) + 1))
+                    self.episode = match.group(3)
+                else:
+                    self.episodes = [int(match.group(4))]
+            elif key == 'season_only':
+                self.season = match.group(0)
+                if match.group(4):
+                    self.seasons = list(range(int(match.group(2)), int(match.group(4)) + 1))
+                else:
+                    self.seasons = [int(match.group(2))]
+            elif key in ['season_word', 'cn_season']:
+                season_int = try_int(match.group(1))
+                self.seasons = [season_int]
+                self.season = 'S' + str(season_int).zfill(2) if season_int else ''
+            elif key in ['cn_episode', 'ep_only']:
+                self.season = 'S01'
+                self.seasons = [1]
+                if match.group(3):
+                    self.episodes = list(range(try_int(match.group(1)), try_int(match.group(3)) + 1))
+                    self.episode = match.group(0)
+                else:
+                    self.episodes = [try_int(match.group(1))]
+                    self.episode = match.group(0)
+            elif key == 'full_season':
+                self.full_season = True
+    
+            se_pos = match.span(0)[0]
+        return se_pos
+
 
     def _check_non_media_type(self, processing_title: str) -> str:
         """Checks if the title is a music or others."""
@@ -245,53 +292,6 @@ class TorTitle:
             if match:
                 return 'other', match
         return '', None
-
-    def _check_movie_tv_type(self, processing_title: str) -> str:
-        """Checks if the title is a TV show."""
-        key, match = self._match_season(processing_title)
-        if match:
-            return 'tv'
-        return 'movie'
-
-    def _extract_season_episode(self, processing_title: str) -> int:
-        """Extracts season and episode numbers."""
-        se_pos = 0
-        key, match = self._match_season(processing_title)
-        if match:
-            if key in ['s_e']:
-                self.season = match.group(1)
-                self.episode = match.group(3)
-                self.seasons = [int(match.group(2))]
-                if match.group(6):
-                    self.episodes = list(range(int(match.group(4)), int(match.group(6)) + 1))
-                    self.episode = match.group(3)
-                else:
-                    self.episodes = [int(match.group(4))]
-            elif key == 'season_only':
-                self.season = match.group(0)
-                if match.group(4):
-                    self.seasons = list(range(int(match.group(2)), int(match.group(4)) + 1))
-                else:
-                    self.seasons = [int(match.group(2))]
-            elif key in ['season_word', 'cn_season']:
-                season_int = try_int(match.group(1))
-                self.seasons = [season_int]
-                self.season = 'S' + str(season_int).zfill(2) if season_int else ''
-            elif key in ['cn_episode', 'ep_only']:
-                self.season = 'S01'
-                self.seasons = [1]
-                if match.group(3):
-                    self.episodes = list(range(try_int(match.group(1)), try_int(match.group(3)) + 1))
-                    self.episode = match.group(0)
-                else:
-                    self.episodes = [try_int(match.group(1))]
-                    self.episode = match.group(0)
-
-            elif key == 'full_season':
-                self.full_season = True
-
-            se_pos = match.span(0)[0]
-        return se_pos
 
     def _cut_year_season(self, processing_title: str, year_pos: int, se_pos: int) -> str:
         """Cuts the year and season part from the title."""
