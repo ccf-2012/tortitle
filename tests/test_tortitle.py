@@ -582,6 +582,7 @@ NON_MEDIA_TEST_CASES = [
     ('Dog Trumpet - Shadowland - 2022 - FLAC分轨', 'music'),
     ('刘德华 - 暖暖柔情粤语精选 1992 WAV分轨 cjm4495@HDSCD', 'music'),
     ('Paul Weller - Modern Classics - The Greatest Hits 1998 - FLAC 分轨 - nbarock', 'music'),
+    ("Private Tutor to the Duke's Daughter S01E10 2025 1080p CR WEB-DL H.264 AAC-FROGWeb", "tv"), 
     # ('Sara K.-No Cover-Chesky-0196', 'music'),
 ]
 
