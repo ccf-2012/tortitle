@@ -115,6 +115,9 @@ test_cases_for_title_parsing = [
     ("2025年央视8K超高清频道春节联欢晚会｜满血真8K ｜HEVC编码 | 超高码率", "春节联欢晚会"),
     ("TVB剧集:原振侠(20集全) 国语无字 黎明/李嘉欣/王菲/朱茵/刘兆铭/吴岱融/钱嘉乐 豆瓣:7 3", "原振侠"),
     ("连载国漫：诡秘之主 第12-13集 / 诡秘之主‎ 小丑卷 / Lord of Mysteries | 类型:动画/奇幻/..", "诡秘之主"),
+    ("[第四届碟粉发种大赛] 黄飞鸿之英雄有梦 / Rise of the Legend / 黄飞鸿 | 主演：彭于晏 / 井柏然 / 王珞丹", "黄飞鸿之英雄有梦"),
+    ("哥伦比亚剧：Her Mother's Killer 第二季 全67集 /La venganza de Analía | 类..", "Her Mother's Killer"),
+    # ("哥伦比亚剧：La Venganza de Analía 第一季 全56集 /Ana's Revenge/Her Mothe..", "La Venganza de Analía"),
 ]   
 
 

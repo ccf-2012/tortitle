@@ -49,7 +49,7 @@ def split_by_language_boundary(text: str) -> list[str]:
     """
     # 正则表达式：匹配一个英文词组（允许内部有空格和部分标点）且后面不跟中文，或者匹配一个非空格的词
     # pattern = r'[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*|[\u4e00-\u9fa5\u3041-\u30fc]+'
-    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9]+)*\b(?![\u4E00–\u9Fa5：，！])|[^\s丨|\-/]+"
+    pattern = r"[a-zA-Z0-9]+(?:[\s.:-]+[a-zA-Z0-9']+)*\b(?![\u4E00–\u9Fa5：，！])|[^\s丨|\-/]+"
     
     return re.findall(pattern, text)
 
@@ -143,8 +143,11 @@ class TorSubtitle:
             return
 
         # 开头的一些明确pattern，带上分隔符一起删
-        PRE_CUT_PATTERN = r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])"
-        processed_name = re.sub(PRE_CUT_PATTERN, "", processed_name)
+        PRE_CUT_PATTERN_LIST =[
+            r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
+             r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
+        ]
+        processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name)
         # 开头的官方国语中字
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
 
@@ -159,7 +162,7 @@ class TorSubtitle:
             r"\b(杜比视界|\w{2}双语|中字|原盘|应求)", 
             r"\b(专辑|综艺|动画|国创|DIY)\b", 
             r"类[别型][:：]",
-            r"(原盘|连载|赛季)\b", r"\b优惠剩余"
+            r"(原盘|连载|赛季)\b", r"\b优惠剩余", "发种大赛",
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
@@ -170,7 +173,7 @@ class TorSubtitle:
 
         PART_CUT_PATTERN_LIST = [
             # r"\b(\w{1,3}剧|\w*[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|哥伦比亚剧|\w+剧集|韩综|港綜)[\:：]",
-            r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
+            # r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
             # r"剧场版",
         ]
         part_clean_pattern = re.compile("|".join(PART_CUT_PATTERN_LIST), re.IGNORECASE)
