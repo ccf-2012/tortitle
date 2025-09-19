@@ -145,7 +145,7 @@ class TorSubtitle:
         # 开头的一些明确pattern，带上分隔符一起删
         PRE_CUT_PATTERN_LIST =[
             r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
-             r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
+             r"\b(\w{1,4}剧|\w*[日国动]漫|动画|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
         ]
         processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name)
         # 开头的官方国语中字
