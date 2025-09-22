@@ -341,7 +341,7 @@ class TorTitle:
         """Polishes the final title by removing noise."""
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
-            r'^Jade\b', r'^TVBClassic', r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
+            r'^Jade\b', r'^KBS\d*\b', r'^TVBClassic', r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED',

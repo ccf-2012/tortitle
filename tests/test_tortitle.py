@@ -563,6 +563,12 @@ TEST_CASES = [
             "type": "tv",
             "full_season": True
         }
+    ),
+    (
+        "KBS1 100 People Appraisal Show The Signature Live 20250806 HDTV 1080i AC3 MP2-TPTV",
+        {
+            "title": "100 People Appraisal Show The Signature Live",
+        }
     )
 ]
 

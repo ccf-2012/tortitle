@@ -119,6 +119,8 @@ test_cases_for_title_parsing = [
     ("哥伦比亚剧：Her Mother's Killer 第二季 全67集 /La venganza de Analía | 类..", "Her Mother's Killer"),
     # ("哥伦比亚剧：La Venganza de Analía 第一季 全56集 /Ana's Revenge/Her Mothe..", "La Venganza de Analía"),
     ("片名：狗阵 | 导演：管虎 | 编剧：葛瑞/管虎/吴兵 | 主演：彭于晏/佟丽娅/贾樟柯/周游/胡晓光/王奕权/牛犇/小辛/张译/袁弘/魏晨/赵毅/张建亚/张杨", "狗阵"),
+    ("KBS1 特辑 100人的感情秀 20250806", "100人的感情秀"),
+    ("王国 | 类别：剧情 动作 惊悚 战争", "王国"),
     
 ]   
 
