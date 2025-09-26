@@ -79,6 +79,7 @@ class TorSubtitle:
         self.episode = ""
         self.episode_pos = 0
         self.total_episodes = 0
+        self.full_season = False
         self.tags = []
         self._parse()
         self.istv = self.season or self.episode or (self.total_episodes > 0)
@@ -106,6 +107,7 @@ class TorSubtitle:
                 episode_str = match.group(1)
             elif match.group(2):  # “全10集”
                 self.total_episodes = int(match.group(2))
+                self.full_season = True
                 # episode_str = f"1-{self.total_episodes}"
 
             if '-' in episode_str:

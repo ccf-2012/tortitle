@@ -251,6 +251,7 @@ class TorTitle:
             elif key == 'full_season':
                 self.full_season = True
     
+            self.full_season = self.full_season or (self.season and not self.episode)
             se_pos = match.span(0)[0]
         return se_pos
 
