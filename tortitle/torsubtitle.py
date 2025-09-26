@@ -250,6 +250,7 @@ class TorSubtitle:
             "season": self.season,
             "episode": self.episode,
             "total_episodes": self.total_episodes,
+            "full_season": self.full_season,
         }
 
 # For backward compatibility, we can keep a function that uses the class.

@@ -448,6 +448,7 @@ TEST_CASES = [
             "title": "Takanenohana",
             "cntitle": "高岭之花",
             "type": "tv",
+            "full_season": True
         }
     ),
     (
@@ -467,7 +468,8 @@ TEST_CASES = [
             "title": "Journey To Guangdong From East To North",
             "type": "tv",
             "episode": "EP03",
-            "episodes": [3]
+            "episodes": [3],
+            "full_season": False
         }
     ),
     (
@@ -479,7 +481,8 @@ TEST_CASES = [
             "season": "S01",
             "seasons": [1],
             "episode": "E04",
-            "episodes": [4]
+            "episodes": [4],
+            "full_season": False
         }
     ),
     (

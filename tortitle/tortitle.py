@@ -211,6 +211,8 @@ class TorTitle:
         key, match = self._match_season(processing_title)
         self.type = 'tv' if match else 'movie'
         if self.type == 'tv':
+            if key == 'full_season':
+                self.full_season = True
             if re.search(r'complete', processing_title[match.span(0)[1]:], flags=re.I):
                 self.full_season = True
         return self.type
@@ -376,7 +378,8 @@ class TorTitle:
             'group': self.group,
             'resolution': self.resolution,
             'video': self.video,
-            'audio': self.audio
+            'audio': self.audio,
+            'full_season': self.full_season,
         }
 
 def parse_tor_name(name: str) -> TorTitle:
