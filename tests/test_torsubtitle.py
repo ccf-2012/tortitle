@@ -119,6 +119,10 @@ test_cases_for_title_parsing = [
     ("哥伦比亚剧：Her Mother's Killer 第二季 全67集 /La venganza de Analía | 类..", "Her Mother's Killer"),
     # ("哥伦比亚剧：La Venganza de Analía 第一季 全56集 /Ana's Revenge/Her Mothe..", "La Venganza de Analía"),
     ("99.9：刑事专业律师 第一季/99.9：刑事专门律师 | 全10集 | 导演: 木村尚 | 主演: 松本润 香川照之 荣仓奈奈 青木崇高 [日语/多语字幕]", "99.9：刑事专业律师"),
+    ("片名：狗阵 | 导演：管虎 | 编剧：葛瑞/管虎/吴兵 | 主演：彭于晏/佟丽娅/贾樟柯/周游/胡晓光/王奕权/牛犇/小辛/张译/袁弘/魏晨/赵毅/张建亚/张杨", "狗阵"),
+    ("KBS1 特辑 100人的感情秀 20250806", "100人的感情秀"),
+    ("王国 | 类别：剧情 动作 惊悚 战争", "王国"),
+    
 ]   
 
 
@@ -128,12 +132,12 @@ def test_parse_title_from_raw_name(case, expected):
 
 
 test_cases_for_season_and_episode_parsing = {
-    "盾之勇者成名录 第四季 | 第07集": {"season": 4, "episode": "E07", "extitle": "盾之勇者成名录"},
+    "盾之勇者成名录 第四季 | 第07集": {"season": 4, "episode": "E07", "extitle": "盾之勇者成名录", "full_season": False},
     "锦月如歌 | 第32-36集": {"season": "", "episode": "E32-E36", "extitle": "锦月如歌"},
     "明月入卿怀 第7-8集": {"season": "", "episode": "E07-E08", "extitle": "明月入卿怀"},
     "美剧：联邦调查局：通缉要犯 第六季 第12集": {"season": 6, "episode": "E12", "extitle": "联邦调查局：通缉要犯"},
-    "暗蚀 Andhera 全8集": {"season": "", "episode": "", "total_episodes": 8, "extitle": "暗蚀"},
-    "夏目友人帐 第七季": {"season": 7, "episode": "", "extitle": "夏目友人帐"},
+    "暗蚀 Andhera 全8集": {"season": "", "episode": "", "total_episodes": 8, "extitle": "暗蚀", "full_season": True  },
+    "夏目友人帐 第七季": {"season": 7, "episode": "", "extitle": "夏目友人帐", 'full_season': True},
     "异形：地球 / Alien: Earth 第1季 第03集": {"season": 1, "episode": "E03", "extitle": "异形：地球"},
     "酱园弄·悬案/酱园弄第一部/酱园弄(上)/酱园弄杀夫案/She Has No Name | 1080p | 国语/中字 | 类型:剧情/犯罪 | 导演:陈可辛/韩帅 | 主演:章子怡/王传君/易烊千玺": 
     {"season": "", "episode": "", "extitle": "酱园弄·悬案"}

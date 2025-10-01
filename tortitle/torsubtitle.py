@@ -79,6 +79,7 @@ class TorSubtitle:
         self.episode = ""
         self.episode_pos = 0
         self.total_episodes = 0
+        self.full_season = False
         self.tags = []
         self._parse()
         self.istv = self.season or self.episode or (self.total_episodes > 0)
@@ -106,6 +107,7 @@ class TorSubtitle:
                 episode_str = match.group(1)
             elif match.group(2):  # “全10集”
                 self.total_episodes = int(match.group(2))
+                self.full_season = True
                 # episode_str = f"1-{self.total_episodes}"
 
             if '-' in episode_str:
@@ -145,7 +147,7 @@ class TorSubtitle:
         # 开头的一些明确pattern，带上分隔符一起删
         PRE_CUT_PATTERN_LIST =[
             r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
-             r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
+             r"\b(\w{1,4}剧|\w*[日国动]漫|动画|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
         ]
         processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name)
         # 开头的官方国语中字
@@ -156,9 +158,9 @@ class TorSubtitle:
             r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+频道", r"\w+TV\w*高清", r"CHC高清\w+",
             r"点播\b", r"\w+字幕", r"简繁(\w+)?", 
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
-            r"\b(\w语|\w国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|新加坡|加拿大|爱尔兰|墨西哥|西班牙)\b", 
+            r"\b(\w语|[中美英法德俄韩泰]国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|新加坡|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧|劇]|纪录片?)$",
-            r"\b(热门|其他|正片|完结|无损)\b", 
+            r"\b(热门|其他|正片|特辑|完结|无损)\b", 
             r"\b(杜比视界|\w{2}双语|中字|原盘|应求)", 
             r"\b(专辑|综艺|动画|国创|DIY)\b", 
             r"类[别型][:：]",
@@ -248,6 +250,7 @@ class TorSubtitle:
             "season": self.season,
             "episode": self.episode,
             "total_episodes": self.total_episodes,
+            "full_season": self.full_season,
         }
 
 # For backward compatibility, we can keep a function that uses the class.

@@ -211,6 +211,8 @@ class TorTitle:
         key, match = self._match_season(processing_title)
         self.type = 'tv' if match else 'movie'
         if self.type == 'tv':
+            if key == 'full_season':
+                self.full_season = True
             if re.search(r'complete', processing_title[match.span(0)[1]:], flags=re.I):
                 self.full_season = True
         return self.type
@@ -251,6 +253,7 @@ class TorTitle:
             elif key == 'full_season':
                 self.full_season = True
     
+            self.full_season = self.full_season or (self.season and not self.episode)
             se_pos = match.span(0)[0]
         return se_pos
 
@@ -341,7 +344,7 @@ class TorTitle:
         """Polishes the final title by removing noise."""
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
-            r'^Jade\b', r'^TVBClassic', r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
+            r'^Jade\b', r'^KBS\d*\b', r'^TVBClassic', r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
             r'\b\w+版', r'全\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED',
@@ -375,7 +378,8 @@ class TorTitle:
             'group': self.group,
             'resolution': self.resolution,
             'video': self.video,
-            'audio': self.audio
+            'audio': self.audio,
+            'full_season': self.full_season,
         }
 
 def parse_tor_name(name: str) -> TorTitle:
