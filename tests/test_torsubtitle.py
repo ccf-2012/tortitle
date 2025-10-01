@@ -118,6 +118,7 @@ test_cases_for_title_parsing = [
     ("[第四届碟粉发种大赛] 黄飞鸿之英雄有梦 / Rise of the Legend / 黄飞鸿 | 主演：彭于晏 / 井柏然 / 王珞丹", "黄飞鸿之英雄有梦"),
     ("哥伦比亚剧：Her Mother's Killer 第二季 全67集 /La venganza de Analía | 类..", "Her Mother's Killer"),
     # ("哥伦比亚剧：La Venganza de Analía 第一季 全56集 /Ana's Revenge/Her Mothe..", "La Venganza de Analía"),
+    ("99.9：刑事专业律师 第一季/99.9：刑事专门律师 | 全10集 | 导演: 木村尚 | 主演: 松本润 香川照之 荣仓奈奈 青木崇高 [日语/多语字幕]", "99.9：刑事专业律师"),
 ]   
 
 
