@@ -187,7 +187,7 @@ class TorTitle:
         return _year_pos, year
 
     patterns = {
-        's_e': r'\b(S(\d+))(E(\d+)(-Ep?(\d+))?)\b',
+        's_e': r'\b(S(\d+))\s*(E(\d+)(-Ep?(\d+))?)\b',
         'season_only': r'(?<![a-zA-Z])(S(\d+)([\-\+]S?(\d+))?)\b(?!.*\bS\d+)',
         'season_word': r'\bSeason (\d+)\b',
         'ep_only': r'\bEp?(\d+)(-E?p?(\d+))?\b',
