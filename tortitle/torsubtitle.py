@@ -98,7 +98,7 @@ class TorSubtitle:
 
     def _parse_episode(self, name: str):
         # “第01集”、“第1-2集”、“第1-10集”、“全10集”的模式
-        episode_pattern = r'(?:第?([0-9]+(?:-[0-9]+)?)[集回]|全([0-9]+)[集回])'
+        episode_pattern = r'(?:第?([0-9]+(?:-[0-9]+)?)[集回]|[全共]([0-9]+)[集回])'
         match = re.search(episode_pattern, name)
         if match:
             self.episode_pos = match.span(0)[0]
@@ -139,7 +139,7 @@ class TorSubtitle:
             return
         
         # 片名应在这些之前出现
-        AFTER_NAME_PATTERN = r"\b([全第].{1,5}[季集回]|导演|主演\b).*"
+        AFTER_NAME_PATTERN = r"\b([全共第].{1,5}[季集回]|导演|主演\b).*"
         processed_name = re.sub(AFTER_NAME_PATTERN, "", processed_name, flags=re.I).strip()
         if not processed_name:
             return

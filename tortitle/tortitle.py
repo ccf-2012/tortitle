@@ -345,7 +345,7 @@ class TorTitle:
         self.title = re.sub(r'[\._\+]', ' ', self.title)
         tags = [
             r'^Jade\b', r'^(KBS|SBS)\d*\b', r'^TVBClassic', r'CCTV\s*\d+(HD|\+)?', r'Top\s*\d+',
-            r'\b\w+版', r'全\d+集', 'BDMV',
+            r'\b\w+版', r'[全共]\d+集', 'BDMV',
             'COMPLETE', 'REPACK', 'PROPER', r'REMASTER\w*',
             'iNTERNAL', 'LIMITED', 'EXTENDED', 'UNRATED',
             r"Direct.{1,5}Cut"
