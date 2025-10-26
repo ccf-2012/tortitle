@@ -164,7 +164,7 @@ class TorSubtitle:
             r"\b(杜比视界|\w{2}双语|中字|原盘|应求)", 
             r"\b(专辑|综艺|动画|国创|[日国动]漫|DIY)\b", 
             r"类[别型][:：]",
-            r"(原盘|连载|赛季)\b", r"\b优惠剩余", "发种大赛",
+            r"(原盘|连载|赛季)\b", r"\b优惠剩余", "发种大赛", "蓝光大赏", "電影系列",
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
