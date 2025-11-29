@@ -572,7 +572,14 @@ TEST_CASES = [
         {
             "title": "100 People Appraisal Show The Signature Live",
         }
-    )
+    ),
+    (
+        "除暴安良 (1977)",
+        {
+            "title": "除暴安良",
+            "year": "1977",
+        }
+    ),
 ]
 
 
