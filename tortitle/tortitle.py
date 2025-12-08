@@ -20,7 +20,8 @@ def cut_ext(torrent_name: str) -> str:
 
 def delimer_to_space(input_string: str) -> str:
     """Replaces various delimiters in a string with spaces."""
-    delimiters = ['[', ']', '.', '{', '}', '_', ',', '(', ')', '「', '」']
+    # add Chinese parentheses and full-width brackets to delimiters so they won't remain
+    delimiters = ['[', ']', '.', '{', '}', '_', ',', '(', ')', '「', '」', '（', '）', '【', '】']
     for dchar in delimiters:
         input_string = input_string.replace(dchar, ' ')
     return input_string
@@ -305,6 +306,8 @@ class TorTitle:
         if positions:
             cut_pos = min(positions)
             processing_title = processing_title[:cut_pos]
+            # remove trailing noise including ASCII and CJK parentheses/brackets and common separators
+            processing_title = re.sub(r'[\s\._\-\(\)\（\）\[\]\{\}]+$', '', processing_title)
         return processing_title.strip()
 
     def _cut_keywords(self, processing_title: str) -> str:

@@ -580,6 +580,17 @@ TEST_CASES = [
             "year": "1977",
         }
     ),
+    (
+        "新世界（2020）",
+        {
+            "title": "新世界",
+            "cntitle": "新世界",
+            "year": "2020",
+            "type": "movie",
+            "season": "",
+            "episode": "",
+        },
+    ),
 ]
 
 
@@ -604,7 +615,7 @@ NON_MEDIA_TEST_CASES = [
     ("My.Archive.2023.rar", "other"),
     ("Another.File.zip", "other"),
     ("Backup.7z", "other"),
-    ('Michael Jackson - The Mystery Of HIStory (1997) [FLAC]', 'music'),
+    ('Michael Jackson - The Mystery Of HIstory (1997) [FLAC]', 'music'),
     ('VA-Kill_Bill_Vol_2-(9362-48676-2)-CD-FLAC-2004', 'music'),
     ('Commodores - Caught In The Act (1975) [FLAC] {24-192 HDTracks}', 'music'),
     ('Aimer - DAWN (2015) {24bit, WEB} [FLAC]', 'music'),
