@@ -245,7 +245,7 @@ class TorTitle:
             elif key in ['cn_episode', 'ep_only']:
                 self.season = 'S01'
                 self.seasons = [1]
-                if match.group(3):
+                if match.re.groups >= 3 and match.group(3):
                     self.episodes = list(range(try_int(match.group(1)), try_int(match.group(3)) + 1))
                     self.episode = match.group(0)
                 else:
