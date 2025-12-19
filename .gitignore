@@ -7,6 +7,8 @@ __pycache__/
 *.so
 *.lock
 
+venv/
+
 # Distribution / packaging
 .Python
 build/
