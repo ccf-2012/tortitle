@@ -143,6 +143,8 @@ test_cases_for_season_and_episode_parsing = {
     "暗蚀 Andhera 全8集": {"season": "", "episode": "", "total_episodes": 8, "extitle": "暗蚀", "full_season": True  },
     "夏目友人帐 第七季": {"season": 7, "episode": "", "extitle": "夏目友人帐", 'full_season': True},
     "异形：地球 / Alien: Earth 第1季 第03集": {"season": 1, "episode": "E03", "extitle": "异形：地球"},
+    "了解宇宙是如何运行的 第十季 | 类型：纪录片": {"season": 10, "episode": "", "extitle": "了解宇宙是如何运行的", 'full_season': True},
+    "变形计 第十七季 全24期 | 类型：真人秀 | 主演：杜华 赵楚苌 *芒果TV*": {"season": 17, "episode": "", "extitle": "变形计", 'full_season': True},
     "酱园弄·悬案/酱园弄第一部/酱园弄(上)/酱园弄杀夫案/She Has No Name | 1080p | 国语/中字 | 类型:剧情/犯罪 | 导演:陈可辛/韩帅 | 主演:章子怡/王传君/易烊千玺": 
     {"season": "", "episode": "", "extitle": "酱园弄·悬案"}
 }
