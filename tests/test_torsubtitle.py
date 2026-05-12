@@ -135,6 +135,7 @@ test_cases_for_title_parsing = [
     ("官方中字官字组DIYDolby VisionHDR10禁转宝贝男孩 / 妈妈的小男孩 【原生KiteBDJ菜单新增按钮】【CC版UHD原盘DIY/双语简繁字幕】", "宝贝男孩"),
     ("官方中字官字组DIY禁转魔羯出笼 / 爱之歌 / 欢喜冤家 / 致命昆虫（内地） 【DIY/双语简繁英五字幕】", "魔羯出笼"),
     ("官方中字官字组动画完结Dolby VisionHDR10星球大战：摩尔-暗影之王 / 星球大战：摩尔-暗影领主 / Star Wars: Maul - Shadow Lord 【全10集】【中英双语字幕】", "星球大战：摩尔-暗影之王"),
+    ("官方国语粤语中字官字组DIY老虎出更2【原生KiteBDJ菜单新增按钮】【Shout Factory原盘DIY国语//国粤配简繁字幕】", "老虎出更2"),
 ]   
 
 

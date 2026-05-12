@@ -148,7 +148,7 @@ class TorSubtitle:
         PRE_CUT_PATTERN_LIST =[
             r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
              r"\b(\w{1,4}[剧劇]|\w*[日国动]漫|动画|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
-             r"^官方(?:粤语|国语)?中字(?:\s*(?:动画|完结|官字组|DIY|Dolby Vision|HDR10|禁转))*",
+             r"^官方(?:\s*(?:首发|动画|粤语|国语|中字|完结|官字组|DIY|Dolby Vision|HDR10|禁转))*",
         ]
         processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name)
         # 开头的官方国语中字
