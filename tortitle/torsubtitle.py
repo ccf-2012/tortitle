@@ -91,10 +91,13 @@ class TorSubtitle:
         if match:
             self.season_pos = match.span(0)[0]
             season_str = match.group(1) or match.group(2)
-            if season_str.isdigit():
-                self.season = int(season_str)
+            season_num = None
+            if season_str and season_str.isdigit():
+                season_num = int(season_str)
             else:
-                self.season = chinese_to_arabic(season_str)
+                season_num = chinese_to_arabic(season_str)
+            if season_num:
+                self.season = f"S{season_num:02d}"
 
     def _parse_episode(self, name: str):
         # “第01集”、“第1-2集”、“第1-10集”、“全10集”的模式
