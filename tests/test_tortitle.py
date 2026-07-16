@@ -602,6 +602,17 @@ TEST_CASES = [
             "episode": "",
         },
     ),
+    (
+        '花间提壶方大厨 (2017) [tmdbid=72043](1)',
+        {
+            "title": "花间提壶方大厨",
+            "cntitle": "花间提壶方大厨",
+            "year": "2017",
+            "type": "movie",
+            "season": "",
+            "episode": "",
+        }
+    ),
 ]
 
 
