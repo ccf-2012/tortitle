@@ -591,6 +591,17 @@ TEST_CASES = [
             "episode": "",
         },
     ),
+    (
+        '小宝和老财 (2014) 3  (24)',
+        {
+            "title": "小宝和老财",
+            "cntitle": "小宝和老财",
+            "year": "2014",
+            "type": "movie",
+            "season": "",
+            "episode": "",
+        },
+    ),
 ]
 
 
