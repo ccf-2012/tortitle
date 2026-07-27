@@ -613,6 +613,97 @@ TEST_CASES = [
             "episode": "",
         }
     ),
+    (
+        "[2018][国产动漫][我家大师兄脑子有坑][全26集][国语中字][1080P]（3.22G）",
+        {
+            "title": "我家大师兄脑子有坑",
+            "cntitle": "我家大师兄脑子有坑",
+            "year": "2018",
+            "type": "tv",
+            "full_season": True,
+            "resolution": "1080p",
+        },
+    ),
+    (
+        "[GM-Team][国漫][时光代理人][Link Click][2021][01-11 Fin+SP][AVC][GB][1080P]（7.43G）",
+        {
+            "title": "Link Click",
+            "cntitle": "时光代理人",
+            "year": "2021",
+            "type": "tv",
+            "season": "S01",
+            "episode": "E01-E11",
+            "episodes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            "group": "GM-Team",
+            "resolution": "1080p",
+            "video": "AVC",
+        },
+    ),
+    (
+        "[WOLF字幕组]14年7月番，月刊少女野崎君[Gekkan Shoujo Nozaki-kun][01-12][附OPED][GB][1280X720][MP4]",
+        {
+            "title": "Gekkan Shoujo Nozaki kun",
+            "cntitle": "月刊少女野崎君",
+            "type": "tv",
+            "season": "S01",
+            "episode": "E01-E12",
+            "episodes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "group": "WOLF字幕组",
+            "resolution": "720p",
+        },
+    ),
+    (
+        "[异域字幕组][关于完全听不懂老公在说什么的事][01-13][1280x720][简体].mp4",
+        {
+            "title": "关于完全听不懂老公在说什么的事",
+            "cntitle": "关于完全听不懂老公在说什么的事",
+            "type": "tv",
+            "season": "S01",
+            "episode": "E01-E13",
+            "episodes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+            "group": "异域字幕组",
+            "resolution": "720p",
+        },
+    ),
+    (
+        "[星空字幕组][转生成女性向游戏里尽是毁灭FLAG的反派大小姐了…][01-12][简日双语][1080P][WEBrip][MP4]",
+        {
+            "title": "转生成女性向游戏里尽是毁灭FLAG的反派大小姐了…",
+            "cntitle": "转生成女性向游戏里尽是毁灭FLAG的反派大小姐了…",
+            "type": "tv",
+            "season": "S01",
+            "episode": "E01-E12",
+            "episodes": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "group": "星空字幕组",
+            "resolution": "1080p",
+        },
+    ),
+    (
+        "【日漫】思维覆写1080p简中（5.53G）",
+        {
+            "title": "思维覆写",
+            "cntitle": "思维覆写",
+            "type": "movie",
+            "resolution": "1080p",
+        },
+    ),
+    (
+        "【百变小樱】魔卡少女樱日语中字720p（23.08G）",
+        {
+            "title": "魔卡少女樱",
+            "cntitle": "魔卡少女樱",
+            "type": "movie",
+            "resolution": "720p",
+        },
+    ),
+    (
+        "  一课一练国语硬字（1.35G）",
+        {
+            "title": "一课一练",
+            "cntitle": "一课一练",
+            "type": "movie",
+        },
+    ),
 ]
 
 

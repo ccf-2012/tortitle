@@ -80,6 +80,12 @@ class TorTitle:
         """
         self.raw_name = self.title.strip()
 
+        # Remove trailing file size tags like （3.22G）, (7.43GB), [3.22G]
+        cleaned_name = re.sub(r'[\(（\[]\s*\d+(?:\.\d+)?\s*[GgMm][Bb]?\s*[\)）\]]\s*$', '', self.title).strip()
+        if cleaned_name:
+            self.title = cleaned_name
+            self.raw_name = cleaned_name
+
         self.resolution = self._parse_resolution(self.raw_name)
         self.media_source, self.video, self.audio = self._parse_media_info(self.raw_name)
         if not self.resolution and not self.video:
@@ -92,9 +98,18 @@ class TorTitle:
         self.title, self.cntitle = self._handle_bracket_title(self.title)
         self.title = self._prepare_title(self.title)
 
-        self.group = self._parse_group(self.title)
-        year_pos, self.year = self._extract_year(self.title)
+        if not self.group:
+            self.group = self._parse_group(self.title)
+
+        year_pos, year_val = self._extract_year(self.title)
+        if not self.year:
+            _, raw_year = self._extract_year(self.raw_name)
+            self.year = year_val or raw_year
+
         se_pos = self._extract_season_episode(self.title)
+        if not self.season and not self.episode:
+            self._extract_season_episode(self.raw_name)
+
         self.failsafe_title = self.title
         self.title = self._cut_year_season(self.title, year_pos, se_pos)
         self.title = self._cut_keywords(self.title)
@@ -106,9 +121,9 @@ class TorTitle:
     def _parse_media_info(self, torrent_name: str) -> Tuple[str, str, str]:
         """Parses media source, video and audio info from the torrent name."""
         media_source, video, audio = '', '', ''
-        if m := re.search(r"(?<=(1080p|2160p)\s)(((\w+)\s+)?WEB(-DL)?)|\bWEB(-DL)?\b|\bHDTV\b|((UHD )?(BluRay|Blu-ray))", torrent_name, re.I):
+        if m := re.search(r"(?<=(1080p|2160p)\s)(((\w+)\s+)?WEB(-DL|-rip)?)|\bWEB(-DL|-rip)?\b|\bHDTV\b|((UHD )?(BluRay|Blu-ray))", torrent_name, re.I):
             m0 = m[0].strip()
-            if re.search(r'WEB[-]?(DL)?', m0, re.I):
+            if re.search(r'WEB[-]?(DL|rip)?', m0, re.I):
                 media_source = 'webdl'
             elif re.search(r'BLURAY|BLU-RAY', m0, re.I):
                 if re.search(r'x26[45]', torrent_name, re.I):
@@ -133,6 +148,9 @@ class TorTitle:
             if r == '4k':
                 r = '2160p'
             return r
+        if match := re.search(r'\b(3840[xX]2160|1920[xX]1080|1280[xX]720)\b', torrent_name, re.I):
+            res_map = {'3840x2160': '2160p', '1920x1080': '1080p', '1280x720': '720p'}
+            return res_map.get(match.group(0).lower(), '')
         return ''
 
     def _parse_group(self, torrent_name: str) -> Optional[str]:
@@ -152,6 +170,90 @@ class TorTitle:
     def _handle_bracket_title(self, processing_title: str) -> Tuple[str, str]:
         """Handles titles enclosed in brackets."""
         cn_title = ""
+        if processing_title.startswith('[') and ']' in processing_title:
+            brackets = re.findall(r'\[([^\]]+)\]', processing_title)
+
+            # Strip leading group bracket if it ends with 字幕组/Fansub/etc.
+            if brackets and re.search(r'字幕组|Fansub|Sub$|Studio$|Team$|Raws$', brackets[0], re.I):
+                if not self.group:
+                    self.group = brackets[0]
+                processing_title = processing_title.replace(f'[{brackets[0]}]', '', 1).strip()
+                brackets = brackets[1:]
+
+            non_bracket_text = re.sub(r'\[[^\]]+\]', '', processing_title).strip()
+
+            if (len(brackets) >= 2 and len(non_bracket_text) < 50) or (len(brackets) >= 1 and len(non_bracket_text) < 5):
+                countries = r'瑞典|加拿大|美国|爱尔兰|日本|韩国|南韩|法国|英国|德国|意大利|西班牙|俄罗斯|印度|泰国|澳大利亚|新西兰|瑞士|挪威|荷兰|波兰|丹麦|芬兰|捷克|比利时|巴西|阿根廷|墨西哥|南非|埃及|土耳其|希腊|匈牙利|奥地利|罗马尼亚|保加利亚|新加坡|马来西亚|印尼|越南|菲律宾|中国|大陆|香港|台湾|港台|欧美|中东'
+                country_pattern = r'^(?:(?:' + countries + r')(?:/(?:' + countries + r'))*)$'
+                category_pattern = r'^(?:[国日美韩泰英台陆](?:剧|漫)|国产(?:动漫|剧|影)?|国漫|日漫|美剧|日剧|韩剧|泰剧|英剧|台剧|陆剧|大陆|港台|欧美|纪录片?|动画|电影|电视剧|国创|动态漫画|TV|MOVIES?|ANIME|官方|首发|独占|招募|漫画)$'
+                spec_pattern = r'^(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|AVC|HEVC|x26[45]|H\.?26[45]|10bit|8bit|HDR(?:10)?|DV|Dolby Vision|WEB-?DL|WEB-?rip|BDRip|BluRay|HDTV|UHD|MKV(?:/BDRip)?|MP4|AAC|FLAC|DTS|DDP|AC3|TrueHD|MP3|GB|BIG5|CHS|CHT|TC|SC|INT|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|简日双语|简日|外挂字幕|内嵌中字|内封字幕|双语字幕|国语|粤语|Fin(?:\+SP)?|SP|Complete|REPACK|PROPER|附OPED)$'
+                ep_pattern = r'^(?:[全共]\s*\d+\s*[集期话]|\d+\s*集全|S\d+(?:E\d+)?|Season\s*\d+|第\d+季|第?\d+(?:-\d+)?[集期话]|\d{1,3}\s*-\s*\d{1,3}.*|TV\s*\d{1,3}.*)$'
+                year_pattern = r'^(?:19|20)\d{2}$'
+                group_pattern = r'^(?:[A-Za-z0-9_\-]+-(?:Team|Raws|Studio|Sub|Fansub|Rip|Group)|\w+字幕组|\w+Fansub|\w+Sub)$'
+
+                cjk_candidates = []
+                non_cjk_candidates = []
+
+                if non_bracket_text:
+                    cleaned_nb = re.sub(r'^\d{2,4}年\d{1,2}月[新]?番[，,\s]*', '', non_bracket_text).strip()
+                    cleaned_nb = re.sub(r'^[「【\[](?:[国日美韩]漫|国产(?:动漫|剧)?|动漫|动画|纪录片?|电影|TV|\w+字幕组|\w+Fansub)[】」\]]\s*', '', cleaned_nb, flags=re.I).strip()
+                    if contains_cjk(cleaned_nb):
+                        cjk_candidates.append(cleaned_nb)
+                    elif cleaned_nb:
+                        non_cjk_candidates.append(cleaned_nb)
+
+                for idx, part in enumerate(brackets):
+                    part_str = part.strip()
+                    if not part_str:
+                        continue
+
+                    if re.match(year_pattern, part_str):
+                        if not self.year:
+                            self.year = part_str
+                        continue
+
+                    if re.match(ep_pattern, part_str, re.I):
+                        if re.search(r'[全共]\s*\d+\s*[集期话]|\d+\s*集全', part_str):
+                            self.full_season = True
+                            self.type = 'tv'
+                        continue
+
+                    if re.match(spec_pattern, part_str, re.I) or re.match(category_pattern, part_str, re.I) or re.match(country_pattern, part_str, re.I):
+                        continue
+
+                    if (idx == 0 or '@' in part_str) and (re.match(group_pattern, part_str, re.I) or part_str.endswith('-Team') or part_str.endswith('-Raws') or part_str.endswith('字幕组') or '@' in part_str):
+                        if not self.group:
+                            self.group = part_str
+                        continue
+
+                    if contains_cjk(part_str):
+                        cjk_candidates.append(part_str)
+                    else:
+                        non_cjk_candidates.append(part_str)
+
+                cjk_filtered = []
+                for c in cjk_candidates:
+                    if re.match(category_pattern, c, re.I) or re.match(country_pattern, c, re.I):
+                        continue
+                    clean_c = re.sub(r'^\d{2,4}年\d{1,2}月[新]?番[，,\s]*', '', c).strip()
+                    clean_c = re.sub(r'\s*第[一二三四五六七八九十\d]+[季集].*', '', clean_c).strip()
+                    clean_c = re.sub(r'\s*S\d+.*', '', clean_c, flags=re.I).strip()
+                    clean_c = re.sub(r'(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|国语|粤语|日语中字|日语).*$', '', clean_c).strip()
+                    if clean_c:
+                        cjk_filtered.append(clean_c)
+
+                if cjk_filtered:
+                    cn_title = cjk_filtered[0]
+
+                non_cjk_title_candidates = [n for n in non_cjk_candidates if not ('@' in n or n.lower() in ['mp4', 'mkv', 'avi', 'ts', 'iso', 'strm', 'flac', 'zip', '7z', 'rar'] or re.match(r'^[a-zA-Z0-9_\-]+-(?:Team|Raws|Studio|Sub|Fansub|Rip|Group)$', n, re.I) or re.match(spec_pattern, n, re.I))]
+                if non_cjk_title_candidates:
+                    non_cjk_title_candidates.sort(key=lambda x: len(x.split()), reverse=True)
+                    processing_title = non_cjk_title_candidates[0]
+                elif cjk_filtered:
+                    processing_title = cjk_filtered[0]
+
+                return processing_title, cn_title
+
         if processing_title.startswith('[') and processing_title.endswith(']'):
             parts = [part.strip() for part in processing_title[1:-1].split('][') if part.strip()]
             keyword_pattern = r'1080p|2160p|4K|Web-?DL|720p|H\.?26[45]|x26[45]|全.{1,4}集'
@@ -192,6 +294,7 @@ class TorTitle:
         'season_only': r'(?<![a-zA-Z])(S(\d+)([\-\+]S?(\d+))?)\b(?!.*\bS\d+)',
         'season_word': r'\bSeason (\d+)\b',
         'ep_only': r'\bEp?(\d+)(-E?p?(\d+))?\b',
+        'ep_range': r'(?<!\d)(0[1-9]|[1-9]\d)\s*-\s*(0[1-9]|[1-9]\d{1,2})(?:\s*(?:Fin|END|Complete|\+SP|v2|OVA|SP))*\b',
         'cn_season': r'第([一二三四五六七八九十]|\d+)季',
         'cn_episode': r'第([一二三四五六七八九十]+|\d+)集',
         'full_season': r'[全]\w{,4}\s*[集季]|\d+\s*集全|\d{4}\s*(S\d+\s*)?complete'
@@ -251,6 +354,14 @@ class TorTitle:
                 else:
                     self.episodes = [try_int(match.group(1))]
                     self.episode = match.group(0)
+            elif key == 'ep_range':
+                start_ep = int(match.group(1))
+                end_ep = int(match.group(2))
+                if start_ep < end_ep and end_ep <= 300:
+                    self.season = 'S01'
+                    self.seasons = [1]
+                    self.episodes = list(range(start_ep, end_ep + 1))
+                    self.episode = f"E{start_ep:02d}-E{end_ep:02d}"
             elif key == 'full_season':
                 self.full_season = True
     
@@ -326,7 +437,11 @@ class TorTitle:
         cn_title = ""
         if contains_cjk(processing_title):
             cn_title = processing_title
-            if m := re.search(r"([一-鿆]+[\-0-9a-zA-Z]*)[ :：]+([^一-鿆]+\b)", processing_title, flags=re.I):
+            # Strip category bracket prefix like 【日漫】
+            cn_title = re.sub(r'^[「【\[](?:[国日美韩]漫|国产(?:动漫|剧)?|日漫|国漫|美剧|动漫|动画|纪录片?|电影|TV|\w+字幕组|\w+Fansub)[】」\]]\s*', '', cn_title, flags=re.I).strip()
+            cn_title = re.sub(r'^\d{2,4}年\d{1,2}月[新]?番[，,\s]*', '', cn_title).strip()
+
+            if m := re.search(r"([一-鿆]+[\-0-9a-zA-Z]*)[ :：]+([^一-鿆]+\b)", cn_title, flags=re.I):
                 cn_title = cn_title[:m.span(1)[1]]
                 processing_title = m.group(2)
 
@@ -338,11 +453,15 @@ class TorTitle:
                 if match:
                     cn_title = match.group()
 
+            # Clean attached specs like 1080p简中, 日语中字720p, 国语硬字
+            cn_title = re.sub(r'(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|国语|粤语|日语中字|日语).*$', '', cn_title).strip()
+
         return processing_title.strip(), cn_title
 
-    def _has_english_chars(self, str) -> bool:
-        """Checks if the title contains English characters."""
-        return bool(re.search('[a-zA-Z]', str))
+    def _has_english_chars(self, text: str) -> bool:
+        """Checks if the title contains meaningful English title words."""
+        cleaned = re.sub(r'\b(1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|AVC|HEVC|x26[45]|H\.?26[45]|10bit|8bit|HDR|DV|WEB-?DL|WEB-?rip|BDRip|MP4|MKV)\b', '', text, flags=re.I)
+        return bool(re.search('[a-zA-Z]{2,}', cleaned))
 
     def _polish_title(self) -> None:
         """Polishes the final title by removing noise."""
@@ -360,12 +479,16 @@ class TorTitle:
 
         self.title = hyphen_to_space(self.title)
         self.title = cut_aka(self.title)
-        self.title = re.sub(r'\s+', ' ', self.title)
+        self.title = re.sub(r'\s+', ' ', self.title).strip()
 
-        if len(self.title) < 1: 
-            self.title = self.failsafe_title
-            if not self._has_english_chars(self.title) and self.cntitle:
-                self.title = self.cntitle
+        if len(self.title) < 1 or self.title.lower() in ['mp4', 'mkv', 'avi', 'ts', 'iso', 'flac', 'zip', '7z', 'rar', 'strm']: 
+            self.title = self.failsafe_title.strip()
+
+        if not self._has_english_chars(self.title) and self.cntitle:
+            self.title = self.cntitle
+
+        if not self._has_english_chars(self.title):
+            self.title = re.sub(r'(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|国语|粤语|日语中字|日语).*$', '', self.title).strip()
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the parsed data as a dictionary."""

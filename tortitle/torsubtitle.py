@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 This module provides a class to parse movie and series information from raw subtitle names.
 """
@@ -136,6 +138,9 @@ class TorSubtitle:
         self.extitle = ""
         processed_name = name.strip()
 
+        # Remove trailing file size tags like （5.53G）
+        processed_name = re.sub(r'[\(（\[]\s*\d+(?:\.\d+)?\s*[GgMm][Bb]?\s*[\)）\]]\s*$', '', processed_name).strip()
+
         # 包含这些的，直接跳过
         NOT_MOVIETV_PATTERN = r"0day破解|\[FLAC\]|\b无损\b|MQA编码|破解版\b|^剩余时间"
         if re.search(NOT_MOVIETV_PATTERN, processed_name, flags=re.I):
@@ -149,29 +154,30 @@ class TorSubtitle:
 
         # 开头的一些明确pattern，带上分隔符一起删
         PRE_CUT_PATTERN_LIST =[
-            r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|]?|\w*翡翠台|\w*漫画|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
+            r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|，,]?|\w*翡翠台|\w*漫画|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
             r"^\d{4}\w+剧\s*[\:：]?",
             r"^\[?(\w{2,4}电影|\w*漫画)[\s\]]",
-            r"\b(\w{1,4}[剧劇]|\w*[日国动]漫|动画|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
+            r"\b(\w{1,4}[剧劇]|\w*[日国动]漫|动画|\w+动漫|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
             r"^官方(?:\s*(?:首发|动画|粤语|国语|中字|完结|官字组|DIY|Dolby Vision|HDR10|禁转))*",
         ]
-        processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name)
+        processed_name = re.sub("|".join(PRE_CUT_PATTERN_LIST), "", processed_name).lstrip("，, ")
         # 开头的官方国语中字
         processed_name = re.sub(r"^(?:官方\s*|首发\s*|禁转\s*|独占\s*|限转\s*|国语\s*|中字\s*|特效\s*|DIY\s*)+\b", "", processed_name, flags=re.I).strip()
 
         # 分段后包含以下pattern，整段删
         SEG_REJECT_PATTERN_CN = [
             r"^(?:(\w+TV(\d+)?|Jade|TVB\w*|点播|翡翠台|\w*卫视|央视|电影|韩综)+)\b", r"[中央]\w+频道", r"\w+频道", r"\w+TV\w*高清", r"CHC高清\w+",
-            r"点播\b", r"\w+字幕", r"简繁(\w+)?", 
+            r"点播\b", r"\w+字幕", r"简繁(\w+)?", r"官译", r"国粤",
             r"[\u2700-\u27BF]", # Unicode Block “Dingbats”
             r"\b(\w语|[中美英法德俄韩泰]国|南韩|印度|日本|瑞士|瑞典|挪威|大陆|香港|港台|新加坡|加拿大|爱尔兰|墨西哥|西班牙)\b", 
             r"\b(\w{1,2}[剧劇]|\w*日劇SP|纪录片?)$",
             r"\b(热门|其他|正片|特辑|完结|无损)\b", 
             r"\b(杜比视界|\w{2}双语|中字|原盘|应求)", 
-            r"\b(专辑|综艺|动画|国创|[日国动]漫|DIY)\b", 
+            r"\b(专辑|综艺|动画|国创|[日国动]漫|\w+动漫|DIY)\b", 
             r"\[?(\w{2,4}电影|\w*漫画)[\s\]]",
             r"类[别型][:：]",
             r"(原盘|连载|赛季)\b", r"\b优惠剩余", "发种大赛", "蓝光大赏", "電影系列",
+            r"\w+语\w字", r"\w+字幕组",
         ]
         SEG_REJECT_PATTERN_EN = [
             r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
@@ -221,6 +227,10 @@ class TorSubtitle:
                 for spart in sub_parts[:3]:
                     # 包含 reject_pattern 的，跳过
                     spart = part_clean_pattern.sub("", spart)
+                    clean_spart = re.sub(r"(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|国语|粤语|日语中字|日语).*$", "", spart).strip()
+                    if clean_spart and contains_cjk(clean_spart) and not reject_pattern.search(clean_spart):
+                        self.extitle = clean_spart
+                        return
                     if reject_pattern.search(spart.strip()):
                         continue
                     if not contains_cjk(spart) or spart.endswith(":"):
