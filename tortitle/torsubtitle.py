@@ -187,9 +187,10 @@ class TorSubtitle:
         eng_pattern = re.compile("|".join(SEG_REJECT_PATTERN_EN), re.IGNORECASE)
 
         PART_CUT_PATTERN_LIST = [
+            r"(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语硬字).*$",
             # r"\b(\w{1,3}剧|\w*[日国动]漫|动画|纪录片?|国创|澳大利亚剧|马来西亚剧|哥伦比亚剧|\w+剧集|韩综|港綜)[\:：]",
             # r"\b(\w{1,4}剧|\w*[日国动]漫|动画|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
-            # r"剧场版",
+            # r"(剧场版|电影版)",
         ]
         part_clean_pattern = re.compile("|".join(PART_CUT_PATTERN_LIST), re.IGNORECASE)
 
@@ -225,9 +226,8 @@ class TorSubtitle:
                     sub_parts = split_by_isolate_space(segment)
                     # sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
+                    clean_spart = part_clean_pattern.sub("", spart) # 1080p 之后先删掉
                     # 包含 reject_pattern 的，跳过
-                    spart = part_clean_pattern.sub("", spart)
-                    clean_spart = re.sub(r"(?:1080[pi]?|2160p|4K|720p|576p|480p|\d{3,4}[xX]\d{3,4}|国语中字|中文字幕|双语|简繁|中字|简中|繁中|简体|繁体|硬字|国语硬字|国语|粤语|日语中字|日语).*$", "", spart).strip()
                     if clean_spart and contains_cjk(clean_spart) and not reject_pattern.search(clean_spart):
                         self.extitle = clean_spart
                         return
