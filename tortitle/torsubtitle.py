@@ -156,6 +156,7 @@ class TorSubtitle:
         PRE_CUT_PATTERN_LIST =[
             r"(\d+\s*年\s*\d+\s*月\s*\w*(番|\w漫)[\:：\s/\|，,]?|\w*翡翠台|\w*漫画|[陸港][剧劇]:?\s*经典台|^\w+高清频道|台湾\(区\)|\(新\)|^[\:：])",
             r"^\d{4}\w+剧\s*[\:：]?",
+            r"内封\w*字幕",
             r"^\[?(\w{2,4}电影|\w*漫画)[\s\]]",
             r"\b(\w{1,4}[剧劇]|\w*[日国动]漫|动画|\w+动漫|片名|纪录片?|国创|\w+剧集|韩综|港綜)[\:：]",
             r"^官方(?:\s*(?:首发|动画|粤语|国语|中字|完结|官字组|DIY|Dolby Vision|HDR10|禁转))*",
@@ -180,7 +181,8 @@ class TorSubtitle:
             r"\w+语\w字", r"\w+字幕组",
         ]
         SEG_REJECT_PATTERN_EN = [
-            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+"
+            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+",
+            r"\w{2,4}(?<!大)电影\b|加拿大电影\b",
         ]
         reject_pattern_list = SEG_REJECT_PATTERN_CN + SEG_REJECT_PATTERN_EN
         reject_pattern = re.compile("|".join(reject_pattern_list), re.IGNORECASE)
@@ -226,19 +228,20 @@ class TorSubtitle:
                     sub_parts = split_by_isolate_space(segment)
                     # sub_parts = re.split(r" ", segment)
                 for spart in sub_parts[:3]:
-                    clean_spart = part_clean_pattern.sub("", spart) # 1080p 之后先删掉
+                    spart_clean = spart.strip()
+                    clean_spart = part_clean_pattern.sub("", spart_clean).strip()
+                    if not clean_spart:
+                        continue
                     # 包含 reject_pattern 的，跳过
-                    if clean_spart and contains_cjk(clean_spart) and not reject_pattern.search(clean_spart):
+                    if reject_pattern.search(clean_spart):
+                        continue
+                    if contains_cjk(clean_spart):
                         self.extitle = clean_spart
                         return
-                    if reject_pattern.search(spart.strip()):
-                        continue
-                    if not contains_cjk(spart) or spart.endswith(":"):
+                    if spart_clean.endswith(":"):
                         # 全英文，以 : 结尾的，等待最后再考虑
-                        candidate_list.append(spart)
+                        candidate_list.append(spart_clean)
                         continue
-                    self.extitle = spart.strip()
-                    return
             else:
                 # 一段[丨|/]分隔的仅包括英文的，
                 if not eng_pattern.search(segment):
