@@ -177,11 +177,11 @@ class TorSubtitle:
             r"\b(专辑|综艺|动画|国创|[日国动]漫|\w+动漫|DIY)\b", 
             r"\[?(\w{2,4}电影|\w*漫画)[\s\]]",
             r"类[别型][:：]",
-            r"(原盘|连载|赛季)\b", r"\b优惠剩余", "发种大赛", "蓝光大赏", "電影系列",
+            r"(原盘|连载|赛季)\b", r"\b优惠剩余", r"发种大赛", r"蓝光大赏", r"電影系列",
             r"\w+语\w字", r"\w+字幕组",
         ]
         SEG_REJECT_PATTERN_EN = [
-            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+",
+            r"PTP Gold.*?corn", r"\bDIY\b", "\bChecked by ", r"(1080p|2160p|720p|4K\b|Max\b)", r"S\d+", r"\b压制",
             r"\w{2,4}(?<!大)电影\b|加拿大电影\b",
         ]
         reject_pattern_list = SEG_REJECT_PATTERN_CN + SEG_REJECT_PATTERN_EN
